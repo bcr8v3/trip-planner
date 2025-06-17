@@ -5,49 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Planner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-    <style>
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">    <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f0f2f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1a1a1a;
         }
         .login-container {
             max-width: 400px;
             margin: 100px auto;
-            padding: 20px;
+            padding: 30px;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .main-container {
             display: none;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0;
         }
-        .calendar-container {
-            margin-top: 20px;
+        .top-bar {
+            background: white;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .trips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .trip-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .trip-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .day-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .day-card h5 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.1rem;
         }
         .event {
-            margin: 5px 0;
-            padding: 8px;
-            border-radius: 4px;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
         }
-        .arrival { background-color: #d4edda; }
-        .activity { background-color: #cce5ff; }
-        .departure { background-color: #f8d7da; }
-        .day-events {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
+        .arrival { 
+            background-color: #d4edda; 
+            border-left: 4px solid #28a745;
+        }
+        .activity { 
+            background-color: #cce5ff; 
+            border-left: 4px solid #007bff;
+        }
+        .departure { 
+            background-color: #f8d7da; 
+            border-left: 4px solid #dc3545;
+        }
+        .add-event-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+        .event-type-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .event-type-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .event-type-button.arrival { background-color: #28a745; color: white; }
+        .event-type-button.activity { background-color: #007bff; color: white; }
+        .event-type-button.departure { background-color: #dc3545; color: white; }
+        .event-type-button:hover { opacity: 0.9; }
+        .event-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .event-form .full-width {
+            grid-column: 1 / -1;
         }
         .saving {
             opacity: 0.7;
@@ -60,13 +130,26 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
         .spinner-overlay.show {
             display: flex;
+        }
+        .back-button {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px;
+            color: #1a1a1a;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .back-button:hover {
+            background: #e9ecef;
         }
     </style>
 </head>
@@ -78,116 +161,57 @@
         </div>
     </div>
 
-    <!--  Screen -->
+    <!-- Login Screen -->
     <div id="loginScreen" class="login-container">
-        <h2 class="text-center mb-4">Travel Planner Logi n</h2>
+        <h2 class="text-center mb-4">Travel Planner Login</h2>
         <div class="form-group mb-3">
             <input type="password" class="form-control" id="keyInput" placeholder="Enter access key">
         </div>
         <button class="btn btn-primary w-100" onclick="login()">Login</button>
-    </div>
-
-    <!-- Main Content -->
+    </div>    <!-- Main Content -->
     <div id="mainContent" class="main-container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 id="tripTitle">Travel Planner</h2>
-            <button class="btn btn-secondary" onclick="logout()">Logout</button>
-        </div>
-
-        <!-- Trip Selection (Master only) -->
-        <div id="tripSelection" class="mb-4" style="display: none;">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4>Manage Trips</h4>
-                <button class="btn btn-primary" onclick="showNewTripForm()">New Trip</button>
+        <!-- Trip Selection View (Master only) -->
+        <div id="tripSelection">
+            <div class="top-bar">
+                <h2>Your Trips</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="showNewTripForm()">New Trip</button>
+                    <button class="btn btn-outline-secondary ms-2" onclick="logout()">Logout</button>
+                </div>
             </div>
-            <div id="tripsList" class="list-group"></div>
+            <div id="tripsList" class="trips-grid"></div>
         </div>
 
-        <!-- Trip Content -->
-        <div id="tripContent">
-            <!-- Add Forms -->
-            <div class="accordion mb-4" id="addForms">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#addArrival">
-                            Add Arrival
-                        </button>
-                    </h2>
-                    <div id="addArrival" class="accordion-collapse collapse" data-bs-parent="#addForms">
-                        <div class="accordion-body">
-                            <form id="arrivalForm" onsubmit="addArrival(event)">
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="arrivalName" placeholder="Name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="arrivalDate" placeholder="Date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="arrivalTime" placeholder="Time" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" data-original-text="Add Arrival">Add Arrival</button>
-                            </form>
-                        </div>
-                    </div>
+        <!-- Trip Detail View -->
+        <div id="tripContent" style="display: none;">
+            <div class="top-bar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="back-button" onclick="showTripSelection()">← Back to Trips</button>
+                    <h2 id="tripTitle">Trip Details</h2>
+                </div>
+                <button class="btn btn-outline-secondary" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Add Event Section -->
+            <div class="add-event-container">
+                <div class="event-type-buttons">
+                    <button class="event-type-button arrival" onclick="showEventForm('arrival')">Add Arrival</button>
+                    <button class="event-type-button activity" onclick="showEventForm('activity')">Add Activity</button>
+                    <button class="event-type-button departure" onclick="showEventForm('departure')">Add Departure</button>
                 </div>
 
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#addActivity">
-                            Add Activity
-                        </button>
-                    </h2>
-                    <div id="addActivity" class="accordion-collapse collapse" data-bs-parent="#addForms">
-                        <div class="accordion-body">
-                            <form id="activityForm" onsubmit="addActivity(event)">
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="activityName" placeholder="Activity Name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="activityDate" placeholder="Date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="activityStartTime" placeholder="Start Time" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="activityEndTime" placeholder="End Time (Optional)">
-                                </div>
-                                <button type="submit" class="btn btn-primary" data-original-text="Add Activity">Add Activity</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#addDeparture">
-                            Add Departure
-                        </button>
-                    </h2>
-                    <div id="addDeparture" class="accordion-collapse collapse" data-bs-parent="#addForms">
-                        <div class="accordion-body">
-                            <form id="departureForm" onsubmit="addDeparture(event)">
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="departureName" placeholder="Name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="departureDate" placeholder="Date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="departureTime" placeholder="Time" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" data-original-text="Add Departure">Add Departure</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                <!-- Unified Event Form -->
+                <form id="eventForm" class="event-form" style="display: none;">
+                    <input type="text" class="form-control" id="eventDate" placeholder="Date" required>
+                    <input type="text" class="form-control" id="eventTime" placeholder="Time" required>
+                    <input type="text" class="form-control full-width" id="eventName" placeholder="Name/Description" required>
+                    <input type="text" class="form-control" id="eventEndTime" placeholder="End Time (for activities)" style="display: none;">
+                    <button type="submit" class="btn btn-primary full-width" id="addEventButton">Add Event</button>
+                </form>
             </div>
 
             <!-- Calendar View -->
-            <div class="calendar-container">
-                <h4>Calendar</h4>
-                <div id="calendar"></div>
-            </div>
+            <div id="calendar" class="calendar-grid"></div>
         </div>
 
         <!-- New Trip Modal (Master only) -->
@@ -318,15 +342,12 @@
             setLoading(true);
             const key = document.getElementById('keyInput').value;
             await loadData();
-            setLoading(false);
-
-            if (key === tripData.masterKey) {
+            setLoading(false);            if (key === tripData.masterKey) {
                 isMaster = true;
                 currentTrip = null; // Reset current trip
                 document.getElementById('tripSelection').style.display = 'block';
-                document.getElementById('calendar').innerHTML = ''; // Clear calendar for master view
-                document.getElementById('tripTitle').textContent = 'Travel Planner - Master View';
-                showMainContent();
+                document.getElementById('tripContent').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
                 loadTripsList();
             } else {
                 const trip = tripData.trips.find(t => t.key === key);
@@ -363,25 +384,72 @@
             tripsList.innerHTML = '';
             
             tripData.trips.forEach(trip => {
-                const item = document.createElement('div');
-                item.className = 'list-group-item d-flex justify-content-between align-items-center';
-                item.innerHTML = `
-                    <div>
-                        <h5 class="mb-1">${trip.name}</h5>
-                        <small>${trip.startDate} to ${trip.endDate}</small>
-                    </div>
-                    <button class="btn btn-primary btn-sm" onclick="selectTrip('${trip.id}')">View</button>
+                const card = document.createElement('div');
+                card.className = 'trip-card';
+                const startDate = new Date(trip.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                const endDate = new Date(trip.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                
+                card.innerHTML = `
+                    <h3 class="h5 mb-3">${trip.name}</h3>
+                    <p class="text-muted mb-3">${startDate} to ${endDate}</p>
+                    <p class="mb-3">
+                        <span class="badge bg-success me-2">${trip.arrivals.length} Arrivals</span>
+                        <span class="badge bg-primary me-2">${trip.activities.length} Activities</span>
+                        <span class="badge bg-danger">${trip.departures.length} Departures</span>
+                    </p>
+                    <button class="btn btn-primary w-100" onclick="selectTrip('${trip.id}')">View Trip</button>
                 `;
-                tripsList.appendChild(item);
-            });
-        }        // Select trip (Master only)
+                tripsList.appendChild(card);            });
+        }
+        
+        // Show trip selection view
+        function showTripSelection() {
+            document.getElementById('tripSelection').style.display = 'block';
+            document.getElementById('tripContent').style.display = 'none';
+            document.getElementById('eventForm').style.display = 'none';
+        }
+
+        // Select trip (Master only)
         function selectTrip(tripId) {
             currentTrip = tripData.trips.find(t => t.id === tripId);
             if (currentTrip) {
                 document.getElementById('tripTitle').textContent = currentTrip.name;
                 document.getElementById('calendar').innerHTML = ''; // Clear existing calendar
+                document.getElementById('tripSelection').style.display = 'none';
+                document.getElementById('tripContent').style.display = 'block';
                 updateCalendar();
             }
+        }
+
+        // Show event form
+        function showEventForm(type) {
+            const form = document.getElementById('eventForm');
+            const endTimeInput = document.getElementById('eventEndTime');
+            const addButton = document.getElementById('addEventButton');
+            
+            form.style.display = 'grid';
+            endTimeInput.style.display = type === 'activity' ? 'block' : 'none';
+            addButton.textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const eventData = {
+                    name: document.getElementById('eventName').value,
+                    date: document.getElementById('eventDate').value,
+                    time: document.getElementById('eventTime').value
+                };
+
+                if (type === 'activity') {
+                    eventData.endTime = document.getElementById('eventEndTime').value || null;
+                    addActivity(null, eventData);
+                } else if (type === 'arrival') {
+                    addArrival(null, eventData);
+                } else if (type === 'departure') {
+                    addDeparture(null, eventData);
+                }
+
+                form.reset();
+            };
         }
 
         // Show new trip form (Master only)
@@ -410,53 +478,51 @@
             const modal = bootstrap.Modal.getInstance(document.getElementById('newTripModal'));
             modal.hide();
             document.getElementById('newTripForm').reset();
-        }
-
-        // Add arrival
-        async function addArrival(event) {
-            event.preventDefault();
-            const arrival = {
-                name: document.getElementById('arrivalName').value,
-                date: document.getElementById('arrivalDate').value,
-                time: document.getElementById('arrivalTime').value
+        }        // Add arrival
+        async function addArrival(event, data) {
+            if (event) event.preventDefault();
+            const arrival = data || {
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                time: document.getElementById('eventTime').value
             };
 
             currentTrip.arrivals.push(arrival);
             await saveData();
             updateCalendar();
-            event.target.reset();
+            document.getElementById('eventForm').style.display = 'none';
         }
 
         // Add activity
-        async function addActivity(event) {
-            event.preventDefault();
-            const activity = {
-                name: document.getElementById('activityName').value,
-                date: document.getElementById('activityDate').value,
-                startTime: document.getElementById('activityStartTime').value,
-                endTime: document.getElementById('activityEndTime').value || null
+        async function addActivity(event, data) {
+            if (event) event.preventDefault();
+            const activity = data || {
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                startTime: document.getElementById('eventTime').value,
+                endTime: document.getElementById('eventEndTime').value || null
             };
 
             currentTrip.activities.push(activity);
             await saveData();
             updateCalendar();
-            event.target.reset();
+            document.getElementById('eventForm').style.display = 'none';
         }
 
         // Add departure
-        async function addDeparture(event) {
-            event.preventDefault();
-            const departure = {
-                name: document.getElementById('departureName').value,
-                date: document.getElementById('departureDate').value,
-                time: document.getElementById('departureTime').value
+        async function addDeparture(event, data) {
+            if (event) event.preventDefault();
+            const departure = data || {
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                time: document.getElementById('eventTime').value
             };
 
             currentTrip.departures.push(departure);
             await saveData();
             updateCalendar();
-            event.target.reset();
-        }        // Update calendar
+            document.getElementById('eventForm').style.display = 'none';
+        }// Update calendar
         function updateCalendar() {
             if (!currentTrip) {
                 document.getElementById('calendar').innerHTML = '<p class="text-muted">Select a trip to view its calendar</p>';
