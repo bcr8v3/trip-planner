@@ -12,6 +12,11 @@
           "name": "John and Family",
           "date": "2025-06-20",
           "time": "14:30"
+        },
+        {
+          "name": "bob",
+          "date": "2025-06-20",
+          "time": "12:00"
         }
       ],
       "activities": [
