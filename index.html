@@ -58,20 +58,28 @@
             gap: 20px;
             padding: 20px;
         }        .day-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e9ecef;
+            border: 2px solid #e3e6ea;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            background: #fff;
+            margin-bottom: 24px;
+            padding: 18px 22px;
             transition: box-shadow 0.2s;
+            min-width: 260px;
         }
         .day-card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.10);
         }
-        .day-card h5 {
-            margin-bottom: 15px;
-            color: #2c3e50;
-            font-size: 1.1rem;
+        .day-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .day-card .list-group-item {
+            border: none;
+            padding-left: 0;
+            padding-right: 0;
+            background: transparent;
         }
         .event {
             margin: 8px 0;
@@ -116,33 +124,59 @@
         .event-type-button.departure { background-color: #dc3545; color: white; }
         .event-type-button:hover { opacity: 0.9; }
         .event-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .event-form .input-group {
+            width: 220px;
+            max-width: 100%;
+        }
+        .event-form .input-group input.form-control {
+            border-radius: 8px 0 0 8px;
+            border: 2px solid #b3d0ff;
+            background: #f4faff;
+            color: #1a1a1a;
+            font-size: 1rem;
+            padding: 8px 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .event-form .input-group input.form-control:focus {
+            border-color: #339af0;
+            background: #e7f3ff;
+            box-shadow: 0 0 0 2px #a5d8ff55;
+        }
+        .event-form .input-group-text {
+            border-radius: 0 8px 8px 0;
+            background: #e7f3ff;
+            border: 2px solid #b3d0ff;
+            border-left: none;
+            color: #339af0;
+            font-size: 1.2rem;
+        }
+        .event-form .input-group input.form-control::placeholder {
+            color: #8bb3d9;
+            opacity: 1;
+        }
+        .event-form .input-group {
+            margin-bottom: 0;
+        }
+        .event-form .event-times-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        .event-form .event-times-row .input-group {
+            width: 120px;
         }
         .event-form .full-width {
-            grid-column: 1 / -1;
+            width: 100%;
         }
-        .time-inputs {
-            grid-column: 1 / -1;
-            display: flex;
-            gap: 15px;
-        }
-        .time-inputs .input-group {
-            flex: 1;
-        }
-        .input-group-text {
-            background-color: #f8f9fa;
-            border-left: none;
-        }
-        .input-group-text i {
-            color: #6c757d;
-        }
-        .input-group .form-control:focus + .input-group-text {
-            border-color: #86b7fe;
-        }
-        .event-form {
-            gap: 15px;
+        .event-form .form-label {
+            font-weight: 500;
+            color: #339af0;
+            margin-bottom: 2px;
         }
         .saving {
             opacity: 0.7;
@@ -186,14 +220,17 @@
         </div>
     </div>
 
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
+    <!-- Login Screen -->    <div id="loginScreen" class="login-container">
         <h2 class="text-center mb-4">Travel Planner Login</h2>
-        <div class="form-group mb-3">
-            <input type="password" class="form-control" id="keyInput" placeholder="Enter access key">
-        </div>
-        <button class="btn btn-primary w-100" onclick="login()">Login</button>
-    </div>    <!-- Main Content -->
+        <form id="loginForm">
+            <div class="form-group mb-3">
+                <input type="password" class="form-control" id="keyInput" placeholder="Enter access key" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+    
+    <!-- Main Content -->
     <div id="mainContent" class="main-container">
         <!-- Trip Selection View (Master only) -->
         <div id="tripSelection">
@@ -208,10 +245,9 @@
         </div>
 
         <!-- Trip Detail View -->
-        <div id="tripContent" style="display: none;">
-            <div class="top-bar">
+        <div id="tripContent" style="display: none;">            <div class="top-bar">
                 <div class="d-flex align-items-center gap-3">
-                    <button class="back-button" onclick="showTripSelection()">← Back to Trips</button>
+                    <button id="backToTripsBtn" class="back-button" onclick="showTripSelection()">← Back to Trips</button>
                     <h2 id="tripTitle">Trip Details</h2>
                 </div>
                 <button class="btn btn-outline-secondary" onclick="logout()">Logout</button>
@@ -225,22 +261,25 @@
                     <button class="event-type-button departure" onclick="showEventForm('departure')">Add Departure</button>
                 </div>
 
-                <!-- Unified Event Form -->                <form id="eventForm" class="event-form" style="display: none;">
-                    <input type="text" class="form-control full-width" id="eventName" placeholder="Name/Description" required>
+                <!-- Unified Event Form -->
+                <form id="eventForm" class="event-form" style="display: none;">
+                    <label for="eventDate" class="form-label">Date</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="eventDate" placeholder="Date" required>
                         <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                     </div>
-                    <div class="time-inputs d-flex gap-2">
+                    <div class="event-times-row">
                         <div class="input-group">
                             <input type="text" class="form-control" id="eventTime" placeholder="Start Time" required>
                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         </div>
                         <div class="input-group activity-only" style="display: none;">
-                            <input type="text" class="form-control" id="eventEndTime" placeholder="End Time (optional)">
+                            <input type="text" class="form-control" id="eventEndTime" placeholder="End Time (Optional)">
                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         </div>
                     </div>
+                    <label for="eventName" class="form-label">Name/Description</label>
+                    <input type="text" class="form-control full-width" id="eventName" placeholder="Name/Description" required>
                     <button type="submit" class="btn btn-primary full-width" id="addEventButton">Add Event</button>
                 </form>
             </div>
@@ -392,21 +431,30 @@
             setLoading(true);
             const key = document.getElementById('keyInput').value;
             await loadData();
-            setLoading(false);            if (key === tripData.masterKey) {
+            setLoading(false);
+            
+            if (key === tripData.masterKey) {
+                // Master user flow
                 isMaster = true;
                 currentTrip = null; // Reset current trip
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('tripSelection').style.display = 'block';
                 document.getElementById('tripContent').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
-                loadTripsList();            } else {
+                document.getElementById('backToTripsBtn').style.display = 'block';
+                loadTripsList();
+            } else {
                 const trip = tripData.trips.find(t => t.key === key);
                 if (trip) {
+                    // Guest user flow - only see specific trip
+                    isMaster = false;
                     currentTrip = trip;
                     document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('tripSelection').style.display = 'none'; // Hide trip selection for guests
                     document.getElementById('tripContent').style.display = 'block';
-                    document.getElementById('mainContent').style.display = 'block';
+                    document.getElementById('mainContent').style.display = 'block'; 
                     document.getElementById('tripTitle').textContent = trip.name;
+                    document.getElementById('backToTripsBtn').style.display = 'none'; // Hide "Back to Trips" for guests
                     updateCalendar();
                 } else {
                     alert('Invalid access key');
@@ -459,9 +507,7 @@
             document.getElementById('tripSelection').style.display = 'block';
             document.getElementById('tripContent').style.display = 'none';
             document.getElementById('eventForm').style.display = 'none';
-        }
-
-        // Select trip (Master only)
+        }        // Select trip (Master only)
         function selectTrip(tripId) {
             currentTrip = tripData.trips.find(t => t.id === tripId);
             if (currentTrip) {
@@ -469,17 +515,113 @@
                 document.getElementById('calendar').innerHTML = ''; // Clear existing calendar
                 document.getElementById('tripSelection').style.display = 'none';
                 document.getElementById('tripContent').style.display = 'block';
+                document.getElementById('backToTripsBtn').style.display = 'block'; // Show back button for master
                 updateCalendar();
             }
-        }        // Show event form
+        }// Setup date and time pickers for event form
+        function setupDateAndTimePickers() {
+            if (!currentTrip) return;
+            // --- Date Picker ---
+            const tripStart = new Date(currentTrip.startDate);
+            const tripEnd = new Date(currentTrip.endDate);
+            let allowedDates = [];
+            let d = new Date(tripStart);
+            while (d <= tripEnd) {
+                allowedDates.push(d.toISOString().split('T')[0]);
+                d.setDate(d.getDate() + 1);
+            }
+            // Determine if trip is within one month
+            const singleMonth = tripStart.getFullYear() === tripEnd.getFullYear() && tripStart.getMonth() === tripEnd.getMonth();
+            const dateFormat = singleMonth ? "d" : "m/d/Y";
+            const placeholder = singleMonth ? "dd" : "mm/dd/yyyy";
+            const eventDateInput = document.getElementById('eventDate');
+            const datePicker = flatpickr(eventDateInput, {
+                dateFormat: dateFormat,
+                allowInput: true,
+                clickOpens: false,
+                enable: allowedDates,
+                onOpen: function(selectedDates, dateStr, instance) {
+                    instance.input.placeholder = placeholder;
+                },
+                onClose: function(selectedDates, dateStr, instance) {
+                    if (!instance.input.value) instance.input.placeholder = "Date";
+                }
+            });
+            // Open picker on icon click or input focus
+            const dateBtn = eventDateInput.parentElement.querySelector('.input-group-text');
+            if (dateBtn) dateBtn.onclick = () => datePicker.open();
+            eventDateInput.onfocus = function() {
+                this.placeholder = placeholder;
+                datePicker.open();
+            };
+            eventDateInput.onblur = function() {
+                if (!this.value) this.placeholder = "Date";
+            };
+            // --- Time Picker (Start) ---
+            const eventTimeInput = document.getElementById('eventTime');
+            const timePicker = flatpickr(eventTimeInput, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "h:i K",
+                time_24hr: false,
+                allowInput: true,
+                clickOpens: false,
+                minuteIncrement: 5,
+                onOpen: function(selectedDates, dateStr, instance) {
+                    instance.input.placeholder = "hh:mm";
+                },
+                onClose: function(selectedDates, dateStr, instance) {
+                    if (!instance.input.value) instance.input.placeholder = "Start Time";
+                }
+            });
+            const timeBtn = eventTimeInput.parentElement.querySelector('.input-group-text');
+            if (timeBtn) timeBtn.onclick = () => timePicker.open();
+            eventTimeInput.onfocus = function() {
+                this.placeholder = "hh:mm";
+                timePicker.open();
+            };
+            eventTimeInput.onblur = function() {
+                if (!this.value) this.placeholder = "Start Time";
+            };
+            // --- Time Picker (End) ---
+            const eventEndTimeInput = document.getElementById('eventEndTime');
+            if (eventEndTimeInput) {
+                const endTimePicker = flatpickr(eventEndTimeInput, {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "h:i K",
+                    time_24hr: false,
+                    allowInput: true,
+                    clickOpens: false,
+                    minuteIncrement: 5,
+                    onOpen: function(selectedDates, dateStr, instance) {
+                        instance.input.placeholder = "hh:mm";
+                    },
+                    onClose: function(selectedDates, dateStr, instance) {
+                        if (!instance.input.value) instance.input.placeholder = "End Time (optional)";
+                    }
+                });
+                const endTimeBtn = eventEndTimeInput.parentElement.querySelector('.input-group-text');
+                if (endTimeBtn) endTimeBtn.onclick = () => endTimePicker.open();
+                eventEndTimeInput.onfocus = function() {
+                    this.placeholder = "hh:mm";
+                    endTimePicker.open();
+                };
+                eventEndTimeInput.onblur = function() {
+                    if (!this.value) this.placeholder = "End Time (optional)";
+                };
+            }
+        }
+
+        // Show event form
         function showEventForm(type) {
             const form = document.getElementById('eventForm');
             const endTimeContainer = document.querySelector('.activity-only');
             const addButton = document.getElementById('addEventButton');
-            
             form.style.display = 'grid';
             endTimeContainer.style.display = type === 'activity' ? 'block' : 'none';
             addButton.textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            setupDateAndTimePickers();
             form.onsubmit = (e) => {
                 e.preventDefault();
                 const eventData = {
@@ -487,7 +629,6 @@
                     date: document.getElementById('eventDate').value,
                     time: document.getElementById('eventTime').value
                 };
-
                 if (type === 'activity') {
                     eventData.endTime = document.getElementById('eventEndTime').value || null;
                     addActivity(null, eventData);
@@ -496,7 +637,6 @@
                 } else if (type === 'departure') {
                     addDeparture(null, eventData);
                 }
-
                 form.reset();
             };
         }
@@ -578,11 +718,11 @@
             }
 
             const calendar = document.getElementById('calendar');
-            calendar.innerHTML = '';            // Create date range with timezone handling
+            calendar.innerHTML = '';
+            // Create date range with timezone handling
             const start = new Date(currentTrip.startDate + 'T00:00:00');
             const end = new Date(currentTrip.endDate + 'T00:00:00');
             const dates = [];
-            
             for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
                 dates.push(new Date(date));
             }
@@ -592,52 +732,53 @@
                 const dateStr = date.getFullYear() + '-' + 
                     String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                     String(date.getDate()).padStart(2, '0');
-                const dayEvents = document.createElement('div');
-                dayEvents.className = 'day-events';
-                
-                dayEvents.innerHTML = `<h5>${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h5>`;
-
+                const dayCard = document.createElement('div');
+                dayCard.className = 'day-card';
+                dayCard.innerHTML = `<div class="card-title">${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>`;
+                let hasEvents = false;
+                let eventsHtml = '';
                 // Add arrivals
                 currentTrip.arrivals
                     .filter(a => a.date === dateStr)
                     .forEach(arrival => {
-                        dayEvents.innerHTML += `
-                            <div class="event arrival">
-                                🛬 ${arrival.time} - ${arrival.name} arrives
-                            </div>
-                        `;
+                        hasEvents = true;
+                        eventsHtml += `<div class="event arrival">🛬 ${arrival.time} - ${arrival.name} arrives</div>`;
                     });
-
                 // Add activities
                 currentTrip.activities
                     .filter(a => a.date === dateStr)
                     .forEach(activity => {
-                        dayEvents.innerHTML += `
-                            <div class="event activity">
-                                📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name}
-                            </div>
-                        `;
+                        hasEvents = true;
+                        eventsHtml += `<div class="event activity">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name}</div>`;
                     });
-
                 // Add departures
                 currentTrip.departures
                     .filter(d => d.date === dateStr)
                     .forEach(departure => {
-                        dayEvents.innerHTML += `
-                            <div class="event departure">
-                                🛫 ${departure.time} - ${departure.name} departs
-                            </div>
-                        `;
+                        hasEvents = true;
+                        eventsHtml += `<div class="event departure">🛫 ${departure.time} - ${departure.name} departs</div>`;
                     });
-
-                if (dayEvents.innerHTML !== '') {
-                    calendar.appendChild(dayEvents);
+                if (!hasEvents) {
+                    eventsHtml = '<div class="text-muted">No events</div>';
                 }
+                dayCard.innerHTML += eventsHtml;
+                calendar.appendChild(dayCard);
             });
         }
 
         // Initialize when the page loads
-        document.addEventListener('DOMContentLoaded', initializeDatePickers);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDatePickers();
+
+            // Enable Enter key for login
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    login();
+                });
+            }
+        });
     </script>
 </body>
 </html>
