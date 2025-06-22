@@ -285,6 +285,7 @@
                     <button id="exportTripBtn" class="btn btn-info ms-3" onclick="exportCurrentTripToPDF()">
                         <i class="bi bi-download"></i> Export PDF
                     </button>
+                    <button id="saveTripBtn" class="btn btn-success ms-3" disabled>Save</button>
                 </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-secondary" onclick="logout()">Logout</button>
@@ -576,26 +577,14 @@
 
         // Add Save button to trip detail view
         function ensureSaveButton() {
-            let saveBtn = document.getElementById('saveTripBtn');
-            if (!saveBtn) {
-                console.log('🔧 Creating new Save button');
-                saveBtn = document.createElement('button');
-                saveBtn.id = 'saveTripBtn';
-                saveBtn.className = 'btn btn-success ms-3';
-                saveBtn.textContent = 'Save';
-                saveBtn.disabled = true;
+            const saveBtn = document.getElementById('saveTripBtn');
+            if (saveBtn) {
                 saveBtn.onclick = async function() {
-                    console.log('💾 Save button clicked by user');
-                    saveAuthorized = true; // Authorize this save
+                    saveAuthorized = true;
                     await saveData();
                     lastSavedTripData = deepClone(tripData);
                     setUnsavedChanges(false);
                 };
-                // Insert after trip title
-                const titleBar = document.querySelector('.top-bar .d-flex');
-                if (titleBar) titleBar.appendChild(saveBtn);
-            } else {
-                console.log('✅ Save button already exists, not creating duplicate');
             }
         }
 
