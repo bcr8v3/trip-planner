@@ -199,6 +199,16 @@
           "time": "13:00"
         }
       ]
+    },
+    {
+      "id": "trip_1750632927251",
+      "key": "test",
+      "name": "test for delte",
+      "startDate": "2025-06-10",
+      "endDate": "2025-06-19",
+      "arrivals": [],
+      "activities": [],
+      "departures": []
     }
   ]
 }
