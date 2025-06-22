@@ -4,9 +4,14 @@
 class TripPDFExporter {
     constructor() {
         console.log('TripPDFExporter initialized');
-    }
-
-    // Main export function
+        
+        // Check if jsPDF is already available
+        if (window.jsPDF) {
+            console.log('✅ jsPDF is already loaded and ready');
+        } else {
+            console.log('⚠️ jsPDF not yet loaded, will load when needed');
+        }
+    }// Main export function
     async exportTripToPDF(trip) {
         if (!trip) {
             alert('No trip data available for export');
@@ -19,16 +24,8 @@ class TripPDFExporter {
             // Show loading state
             this.showLoadingState(true);
 
-            // Check if jsPDF is available
-            if (!window.jsPDF) {
-                console.log('jsPDF not found, attempting to load...');
-                await this.loadJsPDF();
-            }
-
-            // Verify jsPDF loaded
-            if (!window.jsPDF) {
-                throw new Error('jsPDF library failed to load. Please refresh the page and try again.');
-            }
+            // Check if jsPDF is available, if not load it
+            await this.ensureJsPDFLoaded();
 
             console.log('jsPDF available, generating PDF...');
             
@@ -45,37 +42,62 @@ class TripPDFExporter {
         }
     }
 
-    // Load jsPDF library dynamically
-    async loadJsPDF() {
+    // Ensure jsPDF is loaded with better error handling
+    async ensureJsPDFLoaded() {
+        // Check if already loaded
+        if (window.jsPDF) {
+            console.log('jsPDF already available');
+            return;
+        }
+
+        console.log('jsPDF not found, loading...');
+        
+        // Try to load from multiple sources
+        const cdnSources = [
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+            'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
+            'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
+        ];
+
+        for (let i = 0; i < cdnSources.length; i++) {
+            try {
+                console.log(`Trying CDN ${i + 1}:`, cdnSources[i]);
+                await this.loadScriptFromCDN(cdnSources[i]);
+                
+                // Wait a bit for the library to initialize
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                if (window.jsPDF) {
+                    console.log(`Successfully loaded jsPDF from CDN ${i + 1}`);
+                    return;
+                }
+            } catch (error) {
+                console.log(`CDN ${i + 1} failed:`, error.message);
+            }
+        }
+
+        // If all CDNs failed, throw error
+        throw new Error('Failed to load jsPDF library from all CDN sources. Please check your internet connection and try again.');
+    }
+
+    // Load script from a specific CDN
+    async loadScriptFromCDN(url) {
         return new Promise((resolve, reject) => {
-            console.log('Loading jsPDF library...');
-            
             const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.src = url;
+            
+            const timeout = setTimeout(() => {
+                reject(new Error('Script loading timeout'));
+            }, 10000); // 10 second timeout
             
             script.onload = () => {
-                console.log('jsPDF loaded successfully from CDN');
+                clearTimeout(timeout);
                 resolve();
             };
             
             script.onerror = () => {
-                console.log('Primary CDN failed, trying fallback...');
-                
-                // Try fallback CDN
-                const fallbackScript = document.createElement('script');
-                fallbackScript.src = 'https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js';
-                
-                fallbackScript.onload = () => {
-                    console.log('jsPDF loaded from fallback CDN');
-                    resolve();
-                };
-                
-                fallbackScript.onerror = () => {
-                    console.error('Both CDNs failed to load jsPDF');
-                    reject(new Error('Failed to load jsPDF from all CDN sources'));
-                };
-                
-                document.head.appendChild(fallbackScript);
+                clearTimeout(timeout);
+                reject(new Error(`Failed to load script from ${url}`));
             };
             
             document.head.appendChild(script);
