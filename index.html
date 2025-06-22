@@ -614,7 +614,7 @@
             const tripStart = new Date(currentTrip.startDate);
             const tripEnd = new Date(currentTrip.endDate);
             const eventDateInput = document.getElementById('eventDate');
-            flatpickr(eventDateInput, {
+            const datePicker = flatpickr(eventDateInput, {
                 dateFormat: 'Y-m-d',
                 allowInput: true,
                 minDate: currentTrip.startDate,
@@ -623,6 +623,9 @@
                 disableMobile: true
             });
             eventDateInput.placeholder = 'YYYY-MM-DD';
+            // Make calendar icon open date picker
+            const calendarBtn = eventDateInput.parentElement.querySelector('.input-group-text');
+            if (calendarBtn) calendarBtn.onclick = () => datePicker.open();
             // --- Time Picker (Start) ---
             const eventTimeInput = document.getElementById('eventTime');
             const timePicker = flatpickr(eventTimeInput, {
