@@ -5,7 +5,7 @@
       "id": "trip_1687654321000",
       "key": "summer2025key",
       "name": "Summer Gathering 2025",
-      "startDate": "2025-06-20",
+      "startDate": "2025-06-19",
       "endDate": "2025-07-05",
       "arrivals": [
         {
@@ -37,49 +37,196 @@
       "startDate": "2025-07-09",
       "endDate": "2025-07-16",
       "arrivals": [
-        { "name": "Mike", "date": "2025-07-10", "time": "09:00" },
-        { "name": "Lena", "date": "2025-07-10", "time": "13:00" },
-        { "name": "Jay", "date": "2025-07-11", "time": "10:15" },
-        { "name": "Tasha", "date": "2025-07-11", "time": "15:45" },
-        { "name": "Chris", "date": "2025-07-12", "time": "08:30" },
-        { "name": "Aliyah", "date": "2025-07-12", "time": "14:00" }
+        {
+          "name": "Mike",
+          "date": "2025-07-10",
+          "time": "09:00"
+        },
+        {
+          "name": "Lena",
+          "date": "2025-07-10",
+          "time": "13:00"
+        },
+        {
+          "name": "Jay",
+          "date": "2025-07-11",
+          "time": "10:15"
+        },
+        {
+          "name": "Tasha",
+          "date": "2025-07-11",
+          "time": "15:45"
+        },
+        {
+          "name": "Chris",
+          "date": "2025-07-12",
+          "time": "08:30"
+        },
+        {
+          "name": "Aliyah",
+          "date": "2025-07-12",
+          "time": "14:00"
+        }
       ],
       "activities": [
-        { "name": "Beach Volleyball", "date": "2025-07-10", "startTime": "10:00", "endTime": "12:00" },
-        { "name": "Lunch by the Pier", "date": "2025-07-10", "startTime": "13:30", "endTime": "15:00" },
-        { "name": "Sunset Bonfire", "date": "2025-07-10", "startTime": "18:00", "endTime": "21:00" },
-
-        { "name": "Morning Hike", "date": "2025-07-11", "startTime": "08:00", "endTime": "10:00" },
-        { "name": "Museum Visit", "date": "2025-07-11", "startTime": "11:30", "endTime": "13:00" },
-        { "name": "Boat Cruise", "date": "2025-07-11", "startTime": "17:00", "endTime": "20:00" },
-
-        { "name": "Yoga Session", "date": "2025-07-12", "startTime": "07:30", "endTime": "09:00" },
-        { "name": "Farmer's Market", "date": "2025-07-12", "startTime": "10:00", "endTime": "12:00" },
-        { "name": "Dinner & Live Music", "date": "2025-07-12", "startTime": "19:00", "endTime": "22:00" },
-
-        { "name": "Zipline Adventure", "date": "2025-07-13", "startTime": "09:00", "endTime": "11:00" },
-        { "name": "City Tour", "date": "2025-07-13", "startTime": "13:00", "endTime": "15:30" },
-        { "name": "Comedy Night", "date": "2025-07-13", "startTime": "20:00", "endTime": "22:00" },
-
-        { "name": "Surf Lessons", "date": "2025-07-14", "startTime": "08:00", "endTime": "10:30" },
-        { "name": "Lunch at Beach Shack", "date": "2025-07-14", "startTime": "12:00", "endTime": "13:30" },
-        { "name": "Mini Golf", "date": "2025-07-14", "startTime": "16:00", "endTime": "18:00" },
-
-        { "name": "Shopping Spree", "date": "2025-07-15", "startTime": "10:00", "endTime": "12:30" },
-        { "name": "Art Gallery Tour", "date": "2025-07-15", "startTime": "13:30", "endTime": "15:00" },
-        { "name": "Farewell Dinner", "date": "2025-07-15", "startTime": "18:30", "endTime": "21:30" },
-
-        { "name": "Final Walk on Beach", "date": "2025-07-16", "startTime": "06:00", "endTime": "07:00" },
-        { "name": "Brunch and Wrap-up", "date": "2025-07-16", "startTime": "08:30", "endTime": "10:00" },
-        { "name": "Photo Recap Session", "date": "2025-07-16", "startTime": "11:00", "endTime": "12:00" }
+        {
+          "name": "Beach Volleyball",
+          "date": "2025-07-10",
+          "startTime": "10:00",
+          "endTime": "12:00"
+        },
+        {
+          "name": "Lunch by the Pier",
+          "date": "2025-07-10",
+          "startTime": "13:30",
+          "endTime": "15:00"
+        },
+        {
+          "name": "Sunset Bonfire",
+          "date": "2025-07-10",
+          "startTime": "18:00",
+          "endTime": "21:00"
+        },
+        {
+          "name": "Morning Hike",
+          "date": "2025-07-11",
+          "startTime": "08:00",
+          "endTime": "10:00"
+        },
+        {
+          "name": "Museum Visit",
+          "date": "2025-07-11",
+          "startTime": "11:30",
+          "endTime": "13:00"
+        },
+        {
+          "name": "Boat Cruise",
+          "date": "2025-07-11",
+          "startTime": "17:00",
+          "endTime": "20:00"
+        },
+        {
+          "name": "Yoga Session",
+          "date": "2025-07-12",
+          "startTime": "07:30",
+          "endTime": "09:00"
+        },
+        {
+          "name": "Farmer's Market",
+          "date": "2025-07-12",
+          "startTime": "10:00",
+          "endTime": "12:00"
+        },
+        {
+          "name": "Dinner & Live Music",
+          "date": "2025-07-12",
+          "startTime": "19:00",
+          "endTime": "22:00"
+        },
+        {
+          "name": "Zipline Adventure",
+          "date": "2025-07-13",
+          "startTime": "09:00",
+          "endTime": "11:00"
+        },
+        {
+          "name": "City Tour",
+          "date": "2025-07-13",
+          "startTime": "13:00",
+          "endTime": "15:30"
+        },
+        {
+          "name": "Comedy Night",
+          "date": "2025-07-13",
+          "startTime": "20:00",
+          "endTime": "22:00"
+        },
+        {
+          "name": "Surf Lessons",
+          "date": "2025-07-14",
+          "startTime": "08:00",
+          "endTime": "10:30"
+        },
+        {
+          "name": "Lunch at Beach Shack",
+          "date": "2025-07-14",
+          "startTime": "12:00",
+          "endTime": "13:30"
+        },
+        {
+          "name": "Mini Golf",
+          "date": "2025-07-14",
+          "startTime": "16:00",
+          "endTime": "18:00"
+        },
+        {
+          "name": "Shopping Spree",
+          "date": "2025-07-15",
+          "startTime": "10:00",
+          "endTime": "12:30"
+        },
+        {
+          "name": "Art Gallery Tour",
+          "date": "2025-07-15",
+          "startTime": "13:30",
+          "endTime": "15:00"
+        },
+        {
+          "name": "Farewell Dinner",
+          "date": "2025-07-15",
+          "startTime": "18:30",
+          "endTime": "21:30"
+        },
+        {
+          "name": "Final Walk on Beach",
+          "date": "2025-07-16",
+          "startTime": "06:00",
+          "endTime": "07:00"
+        },
+        {
+          "name": "Brunch and Wrap-up",
+          "date": "2025-07-16",
+          "startTime": "08:30",
+          "endTime": "10:00"
+        },
+        {
+          "name": "Photo Recap Session",
+          "date": "2025-07-16",
+          "startTime": "11:00",
+          "endTime": "12:00"
+        }
       ],
       "departures": [
-        { "name": "Mike", "date": "2025-07-15", "time": "13:00" },
-        { "name": "Lena", "date": "2025-07-15", "time": "17:30" },
-        { "name": "Jay", "date": "2025-07-15", "time": "19:45" },
-        { "name": "Tasha", "date": "2025-07-16", "time": "09:00" },
-        { "name": "Chris", "date": "2025-07-16", "time": "11:30" },
-        { "name": "Aliyah", "date": "2025-07-16", "time": "13:00" }
+        {
+          "name": "Mike",
+          "date": "2025-07-15",
+          "time": "13:00"
+        },
+        {
+          "name": "Lena",
+          "date": "2025-07-15",
+          "time": "17:30"
+        },
+        {
+          "name": "Jay",
+          "date": "2025-07-15",
+          "time": "19:45"
+        },
+        {
+          "name": "Tasha",
+          "date": "2025-07-16",
+          "time": "09:00"
+        },
+        {
+          "name": "Chris",
+          "date": "2025-07-16",
+          "time": "11:30"
+        },
+        {
+          "name": "Aliyah",
+          "date": "2025-07-16",
+          "time": "13:00"
+        }
       ]
     }
   ]
