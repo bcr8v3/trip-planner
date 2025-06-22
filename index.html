@@ -601,7 +601,7 @@
 
         // Call this whenever trip detail view is shown
         function setupTripDetailUnsavedLogic() {
-            ensureSaveButton();
+            ensureSaveButton(); // Always ensure Save button for all users
             setUnsavedChanges(false);
             // Warn on navigation if unsaved changes
             window.onbeforeunload = function(e) {
@@ -664,7 +664,7 @@
         function showTripContent() {
             document.getElementById('tripSelection').style.display = 'none';
             document.getElementById('tripContent').style.display = 'block';
-            setupTripDetailUnsavedLogic();
+            setupTripDetailUnsavedLogic(); // Always call this for both user types
             updateTripTitleWithDates();
             updateEditTripBtnVisibility();
             updateCalendar();
