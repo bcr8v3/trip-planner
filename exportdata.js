@@ -98,35 +98,33 @@ class TripPDFExporter {
     }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
         console.log('Creating PDF document with html2pdf.js...');
-        // Create a visible container (opacity: 0, zIndex: 9999) so html2pdf can render it
+        // Make the container fully visible but offscreen
         const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'fixed';
-        tempContainer.style.left = '0px';
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
         tempContainer.style.top = '0px';
         tempContainer.style.width = '800px';
         tempContainer.style.background = 'white';
         tempContainer.style.zIndex = '9999';
-        tempContainer.style.opacity = '0';
-        tempContainer.style.pointerEvents = 'none';
         tempContainer.id = 'pdfTempContainer';
 
         // If no trip, add a test message
         if (!trip) {
             tempContainer.innerHTML = '<div style="font-size:32px;color:red;">TEST PDF CONTENT: No trip data provided</div>';
         } else {
-            // Generate content directly as DOM elements instead of innerHTML
             this.populateContainerWithTripContent(tempContainer, trip);
         }
         // Always add a debug test element to confirm rendering
         const debugTest = document.createElement('div');
         debugTest.textContent = 'PDF DEBUG: This should always appear!';
-        debugTest.style.fontSize = '10px';
+        debugTest.style.fontSize = '20px';
         debugTest.style.color = '#888';
         tempContainer.appendChild(debugTest);
 
         document.body.appendChild(tempContainer);
+        // Wait for the browser to render the content
+        await new Promise(resolve => setTimeout(resolve, 300));
         try {
-            // Configure html2pdf options
             const options = {
                 margin: 10,
                 filename: `${trip && trip.name ? trip.name.replace(/[^a-zA-Z0-9\s]/g, '') : 'Test'}_Itinerary.pdf`,
