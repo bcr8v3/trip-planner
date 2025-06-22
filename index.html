@@ -482,7 +482,13 @@
             forms.forEach(form => {
                 form.classList.toggle('saving', loading);
             });
-        }        // Login function
+        }        // Show/hide Edit Trip Dates button based on isMaster
+        function updateEditTripBtnVisibility() {
+            const btn = document.getElementById('editTripDatesBtn');
+            if (btn) btn.style.display = isMaster ? 'inline-block' : 'none';
+        }
+
+        // Login function
         async function login() {
             try {
                 setLoading(true);
