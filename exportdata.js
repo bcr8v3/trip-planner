@@ -98,6 +98,8 @@ class TripPDFExporter {
     }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
         console.log('Creating PDF document with html2pdf.js...');
+        // Hide loading overlay if present
+        this.showLoadingState(false);
         // Make the container fully visible in the viewport for testing
         const tempContainer = document.createElement('div');
         tempContainer.style.position = 'fixed';
@@ -119,6 +121,10 @@ class TripPDFExporter {
         document.body.appendChild(tempContainer);
         // Wait for the browser to render the content
         await new Promise(resolve => setTimeout(resolve, 500));
+        // Log the HTML being captured
+        console.log('TEMP CONTAINER HTML:', tempContainer.outerHTML);
+        // Log if html2pdf is present
+        console.log('window.html2pdf:', typeof window.html2pdf);
         try {
             const options = {
                 margin: 10,
