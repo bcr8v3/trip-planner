@@ -438,6 +438,7 @@
             setLoading(true);
             
             try {
+                console.log('Sending data to server:', JSON.stringify(tripData));
                 const response = await fetch('/.netlify/functions/updateData', {
                     method: 'POST',
                     headers: {
@@ -446,11 +447,20 @@
                     body: JSON.stringify({ data: tripData })
                 });
 
+                console.log('Server response status:', response.status);
+                
                 if (!response.ok) {
-                    throw new Error('Failed to save data');
+                    // More detailed error based on HTTP status
+                    if (response.status === 502) {
+                        throw new Error('Server error (502): The Netlify function is not responding correctly. This may be due to misconfiguration or deployment issues.');
+                    } else {
+                        throw new Error(`Server error (${response.status}): Failed to save data`);
+                    }
                 }
 
                 const result = await response.json();
+                console.log('Server response data:', result);
+                
                 if (result.error) {
                     throw new Error(result.error);
                 }
@@ -459,7 +469,8 @@
                 await loadData();
             } catch (error) {
                 console.error('Error saving data:', error);
-                alert('Error saving data. Please try again later.');
+                // More informative error message for users
+                alert('Error saving data: ' + error.message + '\n\nYour changes were not saved. Please try again later or contact support if this persists.');
             } finally {
                 setLoading(false);
             }
