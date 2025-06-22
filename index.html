@@ -240,10 +240,11 @@
 
     <!-- Login Screen -->    <div id="loginScreen" class="login-container">
         <h2 class="text-center mb-4">Travel Planner Login</h2>
-        <form id="loginForm">
+        <form id="loginForm" name="login" method="POST" data-netlify="true" data-netlify-recaptcha="true">
             <div class="form-group mb-3">
                 <input type="password" class="form-control" id="keyInput" placeholder="Enter access key" required>
             </div>
+            <div data-netlify-recaptcha="true" class="mb-3"></div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
     </div>
@@ -488,21 +489,26 @@
             if (btn) btn.style.display = isMaster ? 'inline-block' : 'none';
         }
 
+        // Update trip title with date range
+        function updateTripTitleWithDates() {
+            if (!currentTrip) return;
+            const startDate = new Date(currentTrip.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const endDate = new Date(currentTrip.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('tripTitle').textContent = `${currentTrip.name} (${startDate} to ${endDate})`;
+        }
+
         // Login function
         async function login() {
             try {
                 setLoading(true);
                 const key = document.getElementById('keyInput').value;
-                
                 // Reload data to ensure we have the latest
                 await loadData();
-                
                 if (!tripData) {
                     alert('Error loading data. Please try again.');
                     setLoading(false);
                     return;
                 }
-                
                 if (key === tripData.masterKey) {
                     // Master user flow
                     console.log("Login as master successful");
@@ -526,7 +532,7 @@
                         document.getElementById('tripSelection').style.display = 'none'; // Hide trip selection for guests
                         document.getElementById('tripContent').style.display = 'block';
                         document.getElementById('mainContent').style.display = 'block'; 
-                        document.getElementById('tripTitle').textContent = trip.name;
+                        updateTripTitleWithDates();
                         document.getElementById('backToTripsBtn').style.display = 'none'; // Hide "Back to Trips" for guests
                         updateEditTripBtnVisibility();
                         updateCalendar();
@@ -591,7 +597,7 @@
         function selectTrip(tripId) {
             currentTrip = tripData.trips.find(t => t.id === tripId);
             if (currentTrip) {
-                document.getElementById('tripTitle').textContent = currentTrip.name;
+                updateTripTitleWithDates();
                 document.getElementById('calendar').innerHTML = '';
                 document.getElementById('tripSelection').style.display = 'none';
                 document.getElementById('tripContent').style.display = 'block';
@@ -975,7 +981,6 @@
             const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
             modal.show();
         }
-        // Show Edit Trip Modal from trip list (Master only)
         function showEditTripModalFromList(tripId) {
             const trip = tripData.trips.find(t => t.id === tripId);
             if (!trip) return;
@@ -988,8 +993,8 @@
             flatpickr("#editTripEndDate", { dateFormat: "Y-m-d", allowInput: true });
             const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
             modal.show();
+            updateTripTitleWithDates();
         }
-        // Save Trip Edits (Master only)
         async function saveTripEdits() {
             const name = document.getElementById('editTripName').value.trim();
             const key = document.getElementById('editTripKey').value.trim();
@@ -1004,7 +1009,7 @@
             currentTrip.startDate = startDate;
             currentTrip.endDate = endDate;
             await saveData();
-            document.getElementById('tripTitle').textContent = name;
+            updateTripTitleWithDates();
             const modal = bootstrap.Modal.getInstance(document.getElementById('editTripModal'));
             if (modal) modal.hide();
             updateCalendar();
