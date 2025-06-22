@@ -760,15 +760,17 @@
             const idx = tripData.trips.findIndex(t => t.id === currentTrip.id);
             if (idx !== -1) {
                 tripData.trips.splice(idx, 1);
-                saveAuthorized = true; // Authorize this save
-                await saveData();
-                currentTrip = null;
-                document.getElementById('editTripModal').classList.remove('show');
-                document.body.classList.remove('modal-open');
-                document.querySelector('.modal-backdrop')?.remove();
+                // Hide trip immediately from UI before saving
                 document.getElementById('tripContent').style.display = 'none';
                 document.getElementById('tripSelection').style.display = 'block';
                 loadTripsList();
+                saveAuthorized = true; // Authorize this save
+                await saveData();
+                currentTrip = null;
+                // Hide modal and backdrop if open
+                document.getElementById('editTripModal').classList.remove('show');
+                document.body.classList.remove('modal-open');
+                document.querySelector('.modal-backdrop')?.remove();
             }
         }
 
