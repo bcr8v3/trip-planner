@@ -147,13 +147,24 @@ class TripPDFExporter {
                 color: #333;
                 margin-bottom: 20px;
             }
+            .day-cards-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px 16px;
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
             .day-card {
                 background: #fff;
                 border: 1px solid #ddd;
                 border-radius: 6px;
-                margin-bottom: 15px;
+                margin-bottom: 0;
                 padding: 15px;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                width: 340px;
+                box-sizing: border-box;
+                flex: 0 0 340px;
+                page-break-inside: avoid;
             }
             .day-title {
                 font-size: 16px;
@@ -225,15 +236,19 @@ class TripPDFExporter {
         
         mainDiv.appendChild(titleSection);
         
-        // Day cards section
+        // Day cards grid section
+        const grid = document.createElement('div');
+        grid.className = 'day-cards-grid';
+        
         const dates = this.generateDateRange(trip.startDate, trip.endDate);
         
         dates.forEach(date => {
             const dayCard = this.createDayCardData(date, trip);
             const dayCardElement = this.createDayCardElement(dayCard);
-            mainDiv.appendChild(dayCardElement);
+            grid.appendChild(dayCardElement);
         });
         
+        mainDiv.appendChild(grid);
         container.appendChild(mainDiv);
     }
 
