@@ -1103,9 +1103,29 @@
                         hasEvents = true;
                         eventsHtml += `<div class="event arrival">🛬 ${arrival.time} - ${arrival.name} arrives</div>`;
                     });
-                // Add activities
+                // Add activities (sorted by startTime, then endTime)
                 currentTrip.activities
                     .filter(a => a.date === dateStr)
+                    .sort((a, b) => {
+                        // Parse start times
+                        const parseTime = t => {
+                            if (!t) return 0;
+                            const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
+                                let hour = parseInt(h);
+                                if (ampm === 'PM' && hour !== 12) hour += 12;
+                                if (ampm === 'AM' && hour === 12) hour = 0;
+                                return hour.toString().padStart(2, '0') + ':' + min;
+                            })}:00`);
+                            return d.getTime();
+                        };
+                        const aStart = parseTime(a.startTime);
+                        const bStart = parseTime(b.startTime);
+                        if (aStart !== bStart) return aStart - bStart;
+                        // Tiebreaker: endTime
+                        const aEnd = parseTime(a.endTime);
+                        const bEnd = parseTime(b.endTime);
+                        return aEnd - bEnd;
+                    })
                     .forEach(activity => {
                         hasEvents = true;
                         eventsHtml += `<div class="event activity">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name}</div>`;
