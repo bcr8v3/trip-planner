@@ -3,27 +3,50 @@
 
 class TripPDFExporter {
     constructor() {
-        this.loadLibraries();
-    }
-
-    // Load required libraries
+        // Check if jsPDF is already loaded
+        if (window.jsPDF) {
+            console.log('jsPDF already loaded');
+        } else {
+            this.loadLibraries().catch(console.error);
+        }
+    }// Load required libraries
     loadLibraries() {
-        // Load jsPDF
-        if (!window.jsPDF) {
-            const jsPDFScript = document.createElement('script');
-            jsPDFScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            document.head.appendChild(jsPDFScript);
-        }
+        return new Promise((resolve, reject) => {
+            let scriptsToLoad = 0;
+            let scriptsLoaded = 0;
+            
+            const checkComplete = () => {
+                scriptsLoaded++;
+                if (scriptsLoaded === scriptsToLoad) {
+                    resolve();
+                }
+            };
+            
+            // Load jsPDF
+            if (!window.jsPDF) {
+                scriptsToLoad++;
+                const jsPDFScript = document.createElement('script');
+                jsPDFScript.src = 'https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js';
+                jsPDFScript.onload = checkComplete;
+                jsPDFScript.onerror = () => {
+                    // Fallback to different CDN
+                    const fallbackScript = document.createElement('script');
+                    fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    fallbackScript.onload = checkComplete;
+                    fallbackScript.onerror = () => reject(new Error('Failed to load jsPDF library'));
+                    document.head.appendChild(fallbackScript);
+                };
+                document.head.appendChild(jsPDFScript);
+            }
 
-        // Load html2canvas
-        if (!window.html2canvas) {
-            const html2canvasScript = document.createElement('script');
-            html2canvasScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            document.head.appendChild(html2canvasScript);
-        }
-    }
-
-    // Main export function
+            // Load html2canvas - Actually, we don't need html2canvas for this implementation
+            // html2canvas is not needed since we're drawing the PDF programmatically
+            
+            if (scriptsToLoad === 0) {
+                resolve();
+            }
+        });
+    }    // Main export function
     async exportTripToPDF(trip) {
         if (!trip) {
             alert('No trip data available for export');
@@ -34,30 +57,40 @@ class TripPDFExporter {
             // Show loading state
             this.showLoadingState(true);
 
-            // Wait for libraries to load
-            await this.waitForLibraries();
+            // Ensure libraries are loaded
+            if (!window.jsPDF) {
+                console.log('jsPDF not loaded, attempting to load...');
+                await this.loadLibraries();
+                await this.waitForLibraries();
+            }
 
+            // Double check jsPDF is available
+            if (!window.jsPDF) {
+                throw new Error('jsPDF library could not be loaded. Please refresh the page and try again.');
+            }
+
+            console.log('jsPDF loaded successfully, generating PDF...');
             // Create the PDF
             await this.generatePDF(trip);
 
         } catch (error) {
             console.error('Error exporting PDF:', error);
-            alert('Error generating PDF. Please try again.');
+            alert('Error generating PDF: ' + error.message);
         } finally {
             this.showLoadingState(false);
         }
-    }    // Wait for required libraries to load
+    }// Wait for required libraries to load
     async waitForLibraries() {
         let attempts = 0;
         const maxAttempts = 100; // 10 seconds max wait
 
-        while ((!window.jsPDF || !window.html2canvas) && attempts < maxAttempts) {
+        while (!window.jsPDF && attempts < maxAttempts) {
             await new Promise(resolve => setTimeout(resolve, 100));
             attempts++;
         }
 
-        if (!window.jsPDF || !window.html2canvas) {
-            throw new Error('Required libraries failed to load. Please check your internet connection and try again.');
+        if (!window.jsPDF) {
+            throw new Error('jsPDF library failed to load. Please check your internet connection and try again.');
         }
     }
 
