@@ -98,36 +98,31 @@ class TripPDFExporter {
     }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
         console.log('Creating PDF document with html2pdf.js...');
-        // Make the container fully visible but offscreen
+        // Make the container fully visible in the viewport for testing
         const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.top = '0px';
-        tempContainer.style.width = '800px';
+        tempContainer.style.position = 'fixed';
+        tempContainer.style.left = '50px';
+        tempContainer.style.top = '50px';
+        tempContainer.style.width = '600px';
+        tempContainer.style.height = '200px';
         tempContainer.style.background = 'white';
         tempContainer.style.zIndex = '9999';
+        tempContainer.style.border = '3px solid red';
+        tempContainer.style.display = 'flex';
+        tempContainer.style.alignItems = 'center';
+        tempContainer.style.justifyContent = 'center';
         tempContainer.id = 'pdfTempContainer';
 
-        // If no trip, add a test message
-        if (!trip) {
-            tempContainer.innerHTML = '<div style="font-size:32px;color:red;">TEST PDF CONTENT: No trip data provided</div>';
-        } else {
-            this.populateContainerWithTripContent(tempContainer, trip);
-        }
-        // Always add a debug test element to confirm rendering
-        const debugTest = document.createElement('div');
-        debugTest.textContent = 'PDF DEBUG: This should always appear!';
-        debugTest.style.fontSize = '20px';
-        debugTest.style.color = '#888';
-        tempContainer.appendChild(debugTest);
+        // TEST: Always show a big red message
+        tempContainer.innerHTML = '<div style="font-size:40px;color:red;font-weight:bold;">PDF TEST: If you see this, html2pdf works!</div>';
 
         document.body.appendChild(tempContainer);
         // Wait for the browser to render the content
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 500));
         try {
             const options = {
                 margin: 10,
-                filename: `${trip && trip.name ? trip.name.replace(/[^a-zA-Z0-9\s]/g, '') : 'Test'}_Itinerary.pdf`,
+                filename: 'PDF_TEST.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: {
                     scale: 1.5,
