@@ -240,14 +240,17 @@
 
     <!-- Login Screen -->    <div id="loginScreen" class="login-container">
         <h2 class="text-center mb-4">Travel Planner Login</h2>
-        <form id="loginForm" name="login" method="POST" data-netlify="true" data-netlify-recaptcha="true">
+        <form id="loginForm" name="login" autocomplete="off">
             <div class="form-group mb-3">
                 <input type="password" class="form-control" id="keyInput" placeholder="Enter access key" required>
             </div>
-            <div data-netlify-recaptcha="true" class="mb-3"></div>
+            <div class="mb-3">
+                <div class="g-recaptcha" data-sitekey="6Lc7UWkrAAAAAAgGL5ZhurNqhcOhgpLeJ0cO5q3b"></div>
+            </div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
     </div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     
     <!-- Main Content -->
     <div id="mainContent" class="main-container">
@@ -501,6 +504,13 @@
         async function login() {
             try {
                 setLoading(true);
+                // Check reCAPTCHA
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    alert('Please complete the captcha.');
+                    setLoading(false);
+                    return;
+                }
                 const key = document.getElementById('keyInput').value;
                 // Reload data to ensure we have the latest
                 await loadData();
@@ -540,6 +550,8 @@
                         alert('Invalid access key');
                     }
                 }
+                // Reset reCAPTCHA after login attempt
+                grecaptcha.reset();
             } catch (error) {
                 console.error("Login error:", error);
                 alert('An error occurred during login. Please try again.');            } finally {
