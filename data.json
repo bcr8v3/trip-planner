@@ -5,13 +5,18 @@
       "id": "trip_1687654321000",
       "key": "summer2025key",
       "name": "Summer Gathering 2025",
-      "startDate": "2025-06-17",
+      "startDate": "2025-06-18",
       "endDate": "2025-07-05",
       "arrivals": [
         {
           "name": "John and Family",
           "date": "2025-06-20",
           "time": "14:30"
+        },
+        {
+          "name": "test name for save btuton",
+          "date": "2025-06-18",
+          "time": "12:00 PM"
         }
       ],
       "activities": [
