@@ -171,7 +171,7 @@
             max-width: 100%;
         }
         .event-form .event-times-row .activity-only {
-            width: 180px;
+            width: 230px;
             max-width: 100%;
             display: flex !important;
             align-items: center;
@@ -287,12 +287,13 @@
                         <input type="text" class="form-control" id="eventDate" placeholder="Date" required>
                         <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                     </div>
+                    <label class="form-label" id="eventTimeHeader">Time</label>
                     <div class="event-times-row">
                         <div class="input-group">
                             <input type="text" class="form-control" id="eventTime" placeholder="Start Time" required>
                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         </div>
-                        <div class="input-group activity-only" style="display: none;">
+                        <div class="input-group activity-only" style="display: none; width: 230px;">
                             <input type="text" class="form-control" id="eventEndTime" placeholder="End Time (Optional)">
                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         </div>
