@@ -2,40 +2,6 @@
   "masterKey": "master123",
   "trips": [
     {
-      "id": "trip_1687654321000",
-      "key": "summer2025key",
-      "name": "Summer Gathering 2025",
-      "startDate": "2025-06-18",
-      "endDate": "2025-07-05",
-      "arrivals": [
-        {
-          "name": "John and Family",
-          "date": "2025-06-20",
-          "time": "14:30"
-        },
-        {
-          "name": "test name for save btuton",
-          "date": "2025-06-18",
-          "time": "12:00 PM"
-        }
-      ],
-      "activities": [
-        {
-          "name": "Welcome Dinner",
-          "date": "2025-06-20",
-          "startTime": "18:00",
-          "endTime": "21:00"
-        }
-      ],
-      "departures": [
-        {
-          "name": "John and Family",
-          "date": "2025-06-25",
-          "time": "10:00"
-        }
-      ]
-    },
-    {
       "id": "trip_1721428800000",
       "key": "testtripkey",
       "name": "testtrip",
