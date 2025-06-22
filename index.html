@@ -687,13 +687,8 @@
             if (modal) modal.hide();
             document.getElementById('newTripForm').reset();
             showTripContent(); // Show immediately
-            setUnsavedChanges(false);
-            saveAuthorized = true; // Authorize this save
-            setLoading(true);
-            await saveData(); // Save in background
-            setLoading(false);
-            // Optionally reload trip list in background
-            loadTripsList && loadTripsList();
+            setUnsavedChanges(true); // Mark as unsaved so Save button is enabled
+            // User must click Save to persist the new trip
         }
 
         // On trip selection, show trip detail view and setup unsaved logic
