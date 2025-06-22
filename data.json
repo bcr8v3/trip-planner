@@ -206,9 +206,58 @@
       "name": "Seattle August Trip",
       "startDate": "2025-08-20",
       "endDate": "2025-08-25",
-      "arrivals": [],
-      "activities": [],
-      "departures": []
+      "arrivals": [
+        {
+          "name": "Anuj",
+          "date": "2025-08-21",
+          "time": "3:46 PM"
+        },
+        {
+          "name": "Anisha",
+          "date": "2025-08-21",
+          "time": "3:06 AM"
+        },
+        {
+          "name": "Kunal/Alaina",
+          "date": "2025-08-20",
+          "time": "7:20 PM"
+        },
+        {
+          "name": "Ronak/Flavia",
+          "date": "2025-08-20",
+          "time": "10:53 PM"
+        }
+      ],
+      "activities": [
+        {
+          "name": "Boating @ Carillon Point",
+          "date": "2025-08-22",
+          "startTime": "10:00 AM",
+          "endTime": "12:45 PM"
+        }
+      ],
+      "departures": [
+        {
+          "name": "Kunal/Alaina",
+          "date": "2025-08-24",
+          "time": "7:45 PM"
+        },
+        {
+          "name": "Ronak/Flavia",
+          "date": "2025-08-25",
+          "time": "6:45 AM"
+        },
+        {
+          "name": "Anuj",
+          "date": "2025-08-24",
+          "time": "7:50 PM"
+        },
+        {
+          "name": "Anisha",
+          "date": "2025-08-24",
+          "time": "7:45 PM"
+        }
+      ]
     }
   ]
 }
