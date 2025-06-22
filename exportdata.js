@@ -98,50 +98,56 @@ class TripPDFExporter {
     }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
         console.log('Creating PDF document with html2pdf.js...');
-        
-        // Create a visible container first to ensure proper rendering
+        // Create a visible container (opacity: 0, zIndex: 9999) so html2pdf can render it
         const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
+        tempContainer.style.position = 'fixed';
         tempContainer.style.left = '0px';
         tempContainer.style.top = '0px';
         tempContainer.style.width = '800px';
         tempContainer.style.background = 'white';
-        tempContainer.style.zIndex = '-1000';
-        tempContainer.style.visibility = 'hidden';
-        
-        // Generate content directly as DOM elements instead of innerHTML
-        this.populateContainerWithTripContent(tempContainer, trip);
-        
+        tempContainer.style.zIndex = '9999';
+        tempContainer.style.opacity = '0';
+        tempContainer.style.pointerEvents = 'none';
+        tempContainer.id = 'pdfTempContainer';
+
+        // If no trip, add a test message
+        if (!trip) {
+            tempContainer.innerHTML = '<div style="font-size:32px;color:red;">TEST PDF CONTENT: No trip data provided</div>';
+        } else {
+            // Generate content directly as DOM elements instead of innerHTML
+            this.populateContainerWithTripContent(tempContainer, trip);
+        }
+        // Always add a debug test element to confirm rendering
+        const debugTest = document.createElement('div');
+        debugTest.textContent = 'PDF DEBUG: This should always appear!';
+        debugTest.style.fontSize = '10px';
+        debugTest.style.color = '#888';
+        tempContainer.appendChild(debugTest);
+
         document.body.appendChild(tempContainer);
-        
         try {
             // Configure html2pdf options
             const options = {
                 margin: 10,
-                filename: `${trip.name.replace(/[^a-zA-Z0-9\s]/g, '')}_Itinerary.pdf`,
+                filename: `${trip && trip.name ? trip.name.replace(/[^a-zA-Z0-9\s]/g, '') : 'Test'}_Itinerary.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
+                html2canvas: {
                     scale: 1.5,
                     useCORS: true,
                     allowTaint: true,
                     letterRendering: true,
                     backgroundColor: '#ffffff'
                 },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait' 
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
                 }
             };
-            
             console.log('Generating PDF with html2pdf...');
-            console.log('Container content preview:', tempContainer.textContent.substring(0, 200));
-            
             await window.html2pdf().set(options).from(tempContainer).save();
             console.log('PDF generated successfully!');
-            
         } finally {
-            // Clean up the temporary container
             document.body.removeChild(tempContainer);
         }
     }
