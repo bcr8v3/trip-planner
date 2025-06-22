@@ -95,21 +95,23 @@ class TripPDFExporter {
             };
             
             document.head.appendChild(script);        });
-    }
-
-    // Generate the actual PDF document using html2pdf.js
+    }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
         console.log('Creating PDF document with html2pdf.js...');
         
-        // Create HTML content for the PDF
-        const htmlContent = this.createTripHTML(trip);
-        
-        // Create a temporary container
+        // Create a visible container first to ensure proper rendering
         const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = htmlContent;
         tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.top = '-9999px';
+        tempContainer.style.left = '0px';
+        tempContainer.style.top = '0px';
+        tempContainer.style.width = '800px';
+        tempContainer.style.background = 'white';
+        tempContainer.style.zIndex = '-1000';
+        tempContainer.style.visibility = 'hidden';
+        
+        // Generate content directly as DOM elements instead of innerHTML
+        this.populateContainerWithTripContent(tempContainer, trip);
+        
         document.body.appendChild(tempContainer);
         
         try {
@@ -119,9 +121,11 @@ class TripPDFExporter {
                 filename: `${trip.name.replace(/[^a-zA-Z0-9\s]/g, '')}_Itinerary.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { 
-                    scale: 2,
+                    scale: 1.5,
                     useCORS: true,
-                    letterRendering: true
+                    allowTaint: true,
+                    letterRendering: true,
+                    backgroundColor: '#ffffff'
                 },
                 jsPDF: { 
                     unit: 'mm', 
@@ -131,6 +135,8 @@ class TripPDFExporter {
             };
             
             console.log('Generating PDF with html2pdf...');
+            console.log('Container content preview:', tempContainer.textContent.substring(0, 200));
+            
             await window.html2pdf().set(options).from(tempContainer).save();
             console.log('PDF generated successfully!');
             
@@ -138,18 +144,100 @@ class TripPDFExporter {
             // Clean up the temporary container
             document.body.removeChild(tempContainer);
         }
-    }    // Create HTML content that matches the website's styling
-    createTripHTML(trip) {
-        console.log('Creating HTML content for trip:', trip.name);
+    }
+
+    // Populate container with trip content using DOM elements
+    populateContainerWithTripContent(container, trip) {
+        // Clear container
+        container.innerHTML = '';
         
-        const dates = this.generateDateRange(trip.startDate, trip.endDate);
-        let dayCardsHTML = '';
+        // Add styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .pdf-container {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                padding: 20px;
+                background: #fff;
+                color: #333;
+                line-height: 1.4;
+                width: 760px;
+            }
+            .title-section {
+                text-align: center;
+                padding: 40px 20px;
+                border-bottom: 2px solid #007bff;
+                margin-bottom: 30px;
+            }
+            .trip-title {
+                font-size: 28px;
+                font-weight: bold;
+                color: #1a1a1a;
+                margin-bottom: 15px;
+            }
+            .trip-dates {
+                font-size: 16px;
+                color: #666;
+                margin-bottom: 20px;
+            }
+            .trip-stats {
+                font-size: 14px;
+                color: #333;
+                margin-bottom: 20px;
+            }
+            .day-card {
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                margin-bottom: 15px;
+                padding: 15px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .day-title {
+                font-size: 16px;
+                font-weight: bold;
+                color: #1a1a1a;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 5px;
+            }
+            .event-item {
+                margin: 6px 0;
+                padding: 6px 10px;
+                border-radius: 4px;
+                font-size: 13px;
+            }
+            .event-arrival {
+                background: #d4edda;
+                border-left: 3px solid #28a745;
+            }
+            .event-activity {
+                background: #cce7ff;
+                border-left: 3px solid #007bff;
+            }
+            .event-departure {
+                background: #f8d7da;
+                border-left: 3px solid #dc3545;
+            }
+            .no-events {
+                color: #888;
+                font-style: italic;
+                padding: 8px 0;
+            }
+        `;
+        container.appendChild(style);
         
-        // Generate HTML for each day card
-        dates.forEach(date => {
-            const dayCard = this.createDayCardData(date, trip);
-            dayCardsHTML += this.createDayCardHTML(dayCard);
-        });
+        // Create main container
+        const mainDiv = document.createElement('div');
+        mainDiv.className = 'pdf-container';
+        
+        // Title section
+        const titleSection = document.createElement('div');
+        titleSection.className = 'title-section';
+        
+        const titleElement = document.createElement('div');
+        titleElement.className = 'trip-title';
+        titleElement.textContent = trip.name;
+        titleSection.appendChild(titleElement);
         
         const startDate = new Date(trip.startDate + 'T00:00:00').toLocaleDateString('en-US', { 
             month: 'long', day: 'numeric', year: 'numeric' 
@@ -158,154 +246,58 @@ class TripPDFExporter {
             month: 'long', day: 'numeric', year: 'numeric' 
         });
         
+        const datesElement = document.createElement('div');
+        datesElement.className = 'trip-dates';
+        datesElement.textContent = `${startDate} to ${endDate}`;
+        titleSection.appendChild(datesElement);
+        
         const totalArrivals = trip.arrivals ? trip.arrivals.length : 0;
         const totalActivities = trip.activities ? trip.activities.length : 0;
         const totalDepartures = trip.departures ? trip.departures.length : 0;
         
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>${trip.name} - Travel Itinerary</title>
-                <style>
-                    body {
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                        margin: 0;
-                        padding: 20px;
-                        background: #fff;
-                        color: #333;
-                        line-height: 1.4;
-                    }
-                    .title-page {
-                        text-align: center;
-                        padding: 60px 20px;
-                        border-bottom: 2px solid #007bff;
-                        margin-bottom: 40px;
-                    }
-                    .trip-title {
-                        font-size: 36px;
-                        font-weight: bold;
-                        color: #1a1a1a;
-                        margin-bottom: 20px;
-                    }
-                    .trip-dates {
-                        font-size: 20px;
-                        color: #666;
-                        margin-bottom: 30px;
-                    }
-                    .trip-stats {
-                        display: flex;
-                        justify-content: center;
-                        gap: 40px;
-                        font-size: 16px;
-                        color: #333;
-                        margin-bottom: 30px;
-                    }
-                    .stat-item {
-                        text-align: center;
-                    }
-                    .day-card {
-                        background: #fff;
-                        border: 1px solid #e3e6ea;
-                        border-radius: 8px;
-                        margin-bottom: 20px;
-                        padding: 15px;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        page-break-inside: avoid;
-                    }
-                    .day-title {
-                        font-size: 18px;
-                        font-weight: bold;
-                        color: #1a1a1a;
-                        margin-bottom: 15px;
-                        border-bottom: 1px solid #eee;
-                        padding-bottom: 8px;
-                    }
-                    .event-item {
-                        margin: 8px 0;
-                        padding: 8px 12px;
-                        border-radius: 6px;
-                        font-size: 14px;
-                        position: relative;
-                        padding-left: 20px;
-                    }
-                    .event-arrival {
-                        background: #d4edda;
-                        border-left: 4px solid #28a745;
-                    }
-                    .event-activity {
-                        background: #cce7ff;
-                        border-left: 4px solid #007bff;
-                    }
-                    .event-departure {
-                        background: #f8d7da;
-                        border-left: 4px solid #dc3545;
-                    }
-                    .no-events {
-                        color: #888;
-                        font-style: italic;
-                        padding: 10px 0;
-                    }
-                    .footer {
-                        text-align: center;
-                        margin-top: 40px;
-                        padding-top: 20px;
-                        border-top: 1px solid #eee;
-                        color: #999;
-                        font-size: 12px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="title-page">
-                    <div class="trip-title">${trip.name}</div>
-                    <div class="trip-dates">${startDate} to ${endDate}</div>
-                    <div class="trip-stats">
-                        <div class="stat-item">${totalArrivals} Arrivals</div>
-                        <div class="stat-item">${totalActivities} Activities</div>
-                        <div class="stat-item">${totalDepartures} Departures</div>
-                    </div>
-                </div>
-                
-                <div class="day-cards">
-                    ${dayCardsHTML}
-                </div>
-                
-                <div class="footer">
-                    Generated on ${new Date().toLocaleDateString('en-US', { 
-                        month: 'long', day: 'numeric', year: 'numeric',
-                        hour: 'numeric', minute: '2-digit'
-                    })}
-                </div>
-            </body>
-            </html>
-        `;
+        const statsElement = document.createElement('div');
+        statsElement.className = 'trip-stats';
+        statsElement.textContent = `${totalArrivals} Arrivals • ${totalActivities} Activities • ${totalDepartures} Departures`;
+        titleSection.appendChild(statsElement);
+        
+        mainDiv.appendChild(titleSection);
+        
+        // Day cards section
+        const dates = this.generateDateRange(trip.startDate, trip.endDate);
+        
+        dates.forEach(date => {
+            const dayCard = this.createDayCardData(date, trip);
+            const dayCardElement = this.createDayCardElement(dayCard);
+            mainDiv.appendChild(dayCardElement);
+        });
+        
+        container.appendChild(mainDiv);
     }
 
-    // Create HTML for a single day card
-    createDayCardHTML(dayCard) {
-        let eventsHTML = '';
+    // Create DOM element for day card
+    createDayCardElement(dayCard) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'day-card';
+        
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'day-title';
+        titleDiv.textContent = dayCard.title;
+        cardDiv.appendChild(titleDiv);
         
         if (dayCard.events.length === 0) {
-            eventsHTML = '<div class="no-events">No events scheduled</div>';
+            const noEventsDiv = document.createElement('div');
+            noEventsDiv.className = 'no-events';
+            noEventsDiv.textContent = 'No events scheduled';
+            cardDiv.appendChild(noEventsDiv);
         } else {
             dayCard.events.forEach(event => {
-                const eventClass = `event-${event.type}`;
-                eventsHTML += `
-                    <div class="event-item ${eventClass}">
-                        ${event.icon} ${event.time} - ${event.description}
-                    </div>
-                `;
+                const eventDiv = document.createElement('div');
+                eventDiv.className = `event-item event-${event.type}`;
+                eventDiv.textContent = `${event.icon} ${event.time} - ${event.description}`;
+                cardDiv.appendChild(eventDiv);
             });
-        }
-        
-        return `
-            <div class="day-card">
-                <div class="day-title">${dayCard.title}</div>
-                ${eventsHTML}
-            </div>
-        `;
+        }        
+        return cardDiv;
     }
 
     // Generate array of dates for the trip
