@@ -199,6 +199,16 @@
           "time": "13:00"
         }
       ]
+    },
+    {
+      "id": "trip_1750634072256",
+      "key": "test",
+      "name": "test",
+      "startDate": "2025-06-24",
+      "endDate": "2025-07-02",
+      "arrivals": [],
+      "activities": [],
+      "departures": []
     }
   ]
 }
