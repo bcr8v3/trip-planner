@@ -328,7 +328,8 @@
         let isMaster = false;
         let isLoading = false;
 
-        // Initialize date pickers        function initializeDatePickers() {
+        // Initialize date pickers
+        function initializeDatePickers() {
             // Trip date pickers
             flatpickr("#tripStartDate", { 
                 dateFormat: "Y-m-d",
@@ -347,18 +348,18 @@
                 maxDate: currentTrip ? currentTrip.endDate : null
             });
 
-            // Time pickers with 24h format
+            // Time pickers with 12h format for consistency
             const timeConfig = {
                 enableTime: true,
                 noCalendar: true,
-                dateFormat: "H:i",
+                dateFormat: "h:i K",
                 allowInput: true,
-                time_24hr: true,
+                time_24hr: false,
             };
 
             flatpickr("#eventTime", timeConfig);
             flatpickr("#eventEndTime", timeConfig);
-        
+        }
 
         // Load data
         async function loadData() {
@@ -536,6 +537,16 @@
         }// Setup date and time pickers for event form
         function setupDateAndTimePickers() {
             if (!currentTrip) return;
+            
+            // Clear any existing flatpickr instances to prevent conflicts
+            const existingPickers = ['eventDate', 'eventTime', 'eventEndTime'];
+            existingPickers.forEach(id => {
+                const element = document.getElementById(id);
+                if (element && element._flatpickr) {
+                    element._flatpickr.destroy();
+                }
+            });
+            
             // --- Date Picker ---
             const tripStart = new Date(currentTrip.startDate);
             const tripEnd = new Date(currentTrip.endDate);
@@ -639,17 +650,26 @@
             setupDateAndTimePickers();
             form.onsubmit = (e) => {
                 e.preventDefault();
-                const eventData = {
-                    name: document.getElementById('eventName').value,
-                    date: document.getElementById('eventDate').value,
-                    time: document.getElementById('eventTime').value
-                };
+                const name = document.getElementById('eventName').value.trim();
+                const date = document.getElementById('eventDate').value.trim();
+                const time = document.getElementById('eventTime').value.trim();
+                if (!name || !date || !time || isNaN(Date.parse(date))) {
+                    alert('Please enter a valid name, date, and time.');
+                    return;
+                }
                 if (type === 'activity') {
-                    eventData.endTime = document.getElementById('eventEndTime').value || null;
+                    const eventData = {
+                        name,
+                        date,
+                        startTime: time,
+                        endTime: document.getElementById('eventEndTime').value || null
+                    };
                     addActivity(null, eventData);
                 } else if (type === 'arrival') {
+                    const eventData = { name, date, time };
                     addArrival(null, eventData);
                 } else if (type === 'departure') {
+                    const eventData = { name, date, time };
                     addDeparture(null, eventData);
                 }
                 form.reset();
@@ -660,26 +680,34 @@
         function showNewTripForm() {
             const modal = new bootstrap.Modal(document.getElementById('newTripModal'));
             modal.show();
+            initializeDatePickers(); // Ensure pickers are always initialized when modal is shown
         }        // Create new trip (Master only)
         async function createNewTrip() {
+            const tripName = document.getElementById('tripName').value.trim();
+            const tripKey = document.getElementById('tripKey').value.trim();
+            const tripStartDate = document.getElementById('tripStartDate').value.trim();
+            const tripEndDate = document.getElementById('tripEndDate').value.trim();
+            // Simple validation
+            if (!tripName || !tripKey || !tripStartDate || !tripEndDate || isNaN(Date.parse(tripStartDate)) || isNaN(Date.parse(tripEndDate))) {
+                alert('Please enter a valid trip name, key, start date, and end date.');
+                return;
+            }
             const timestamp = new Date().getTime();
             const newTrip = {
                 id: `trip_${timestamp}`,
-                key: document.getElementById('tripKey').value,
-                name: document.getElementById('tripName').value,
-                startDate: document.getElementById('tripStartDate').value,
-                endDate: document.getElementById('tripEndDate').value,
+                key: tripKey,
+                name: tripName,
+                startDate: tripStartDate,
+                endDate: tripEndDate,
                 arrivals: [],
                 activities: [],
                 departures: []
             };
-
             tripData.trips.push(newTrip);
             await saveData();
             loadTripsList();
-            
             const modal = bootstrap.Modal.getInstance(document.getElementById('newTripModal'));
-            modal.hide();
+            if (modal) modal.hide();
             document.getElementById('newTripForm').reset();
         }        // Add arrival
         async function addArrival(event, data) {
@@ -742,6 +770,33 @@
                 dates.push(new Date(date));
             }
 
+            // Helper to validate event date
+            function isValidEventDate(dateStr) {
+                return dateStr && !isNaN(Date.parse(dateStr));
+            }
+
+            // Check for invalid events before rendering
+            let invalidEvent = null;
+            let invalidType = '';
+            let invalidIndex = -1;
+            ['arrivals', 'activities', 'departures'].forEach(type => {
+                if (currentTrip[type] && Array.isArray(currentTrip[type])) {
+                    currentTrip[type].forEach((event, idx) => {
+                        if (!isValidEventDate(event.date)) {
+                            invalidEvent = event;
+                            invalidType = type;
+                            invalidIndex = idx;
+                        }
+                    });
+                }
+            });
+            if (invalidEvent) {
+                alert(`Invalid or missing date for an event: "${invalidEvent.name}". Please correct it.`);
+                // Show event form pre-filled for correction
+                showEventCorrectionForm(invalidType, invalidEvent, invalidIndex);
+                return;
+            }
+
             // Create calendar entries
             dates.forEach(date => {
                 const dateStr = date.getFullYear() + '-' + 
@@ -779,19 +834,78 @@
                 dayCard.innerHTML += eventsHtml;
                 calendar.appendChild(dayCard);
             });
-        }        // Initialize when the page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Load data first thing when page loads
-            await loadData();
-            initializeDatePickers();
+        }        // Show event correction form for invalid event
+        function showEventCorrectionForm(type, event, index) {
+            const form = document.getElementById('eventForm');
+            const endTimeContainer = document.querySelector('.activity-only');
+            const addButton = document.getElementById('addEventButton');
+            // Map plural to singular for label and logic
+            const typeMap = { 'arrivals': 'Arrival', 'departures': 'Departure', 'activities': 'Activity' };
+            const singularType = typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1, -1);
+            form.style.display = 'grid';
+            endTimeContainer.style.display = type === 'activities' ? 'block' : 'none';
+            addButton.textContent = `Fix ${singularType}`;
+            
+            // Clear any existing event listeners
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            // Pre-fill form
+            document.getElementById('eventName').value = event.name || '';
+            document.getElementById('eventDate').value = event.date || '';
+            document.getElementById('eventTime').value = event.time || event.startTime || '';
+            if (type === 'activities') {
+                document.getElementById('eventEndTime').value = event.endTime || '';
+            }
+            setupDateAndTimePickers();
+            
+            document.getElementById('eventForm').onsubmit = async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('eventName').value.trim();
+                const date = document.getElementById('eventDate').value.trim();
+                const time = document.getElementById('eventTime').value.trim();
+                if (!name || !date || !time || isNaN(Date.parse(date))) {
+                    alert('Please enter a valid name, date, and time.');
+                    return;
+                }
+                if (type === 'arrivals') {
+                    currentTrip.arrivals[index] = { name, date, time };
+                } else if (type === 'departures') {
+                    currentTrip.departures[index] = { name, date, time };
+                } else if (type === 'activities') {
+                    const endTime = document.getElementById('eventEndTime').value || null;
+                    currentTrip.activities[index] = { name, date, startTime: time, endTime };
+                }
+                await saveData();
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventForm').style.display = 'none';
+                updateCalendar(); // Try again
+            };
+        }
 
-            // Enable Enter key for login
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    login();
-                });
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Load data first thing when page loads
+                await loadData();
+                
+                // Initialize date pickers safely
+                if (typeof initializeDatePickers === 'function') {
+                    initializeDatePickers();
+                } else {
+                    console.error('initializeDatePickers function is not defined');
+                }
+
+                // Enable Enter key for login
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        login();
+                    });
+                }
+            } catch (error) {
+                console.error('Error during initialization:', error);
             }
         });
 
