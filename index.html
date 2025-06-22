@@ -564,10 +564,9 @@
             tripData.trips.forEach(trip => {
                 const card = document.createElement('div');
                 card.className = 'trip-card';
-                // Use the same date logic as the calendar (start +1 day, end +1 day)
-                const startDate = new Date(new Date(trip.startDate + 'T00:00:00').getTime() + 24*60*60*1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                const endDate = new Date(new Date(trip.endDate + 'T00:00:00').getTime() + 24*60*60*1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                
+                // Show correct start and end dates (no +1 day)
+                const startDate = new Date(trip.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                const endDate = new Date(trip.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                 card.innerHTML = `
                     <h3 class="h5 mb-3">${trip.name}</h3>
                     <p class="text-muted mb-3">${startDate} to ${endDate}</p>
@@ -968,6 +967,20 @@
             document.getElementById('editTripKey').value = currentTrip.key;
             document.getElementById('editTripStartDate').value = currentTrip.startDate;
             document.getElementById('editTripEndDate').value = currentTrip.endDate;
+            flatpickr("#editTripStartDate", { dateFormat: "Y-m-d", allowInput: true });
+            flatpickr("#editTripEndDate", { dateFormat: "Y-m-d", allowInput: true });
+            const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
+            modal.show();
+        }
+        // Show Edit Trip Modal from trip list (Master only)
+        function showEditTripModalFromList(tripId) {
+            const trip = tripData.trips.find(t => t.id === tripId);
+            if (!trip) return;
+            currentTrip = trip;
+            document.getElementById('editTripName').value = trip.name;
+            document.getElementById('editTripKey').value = trip.key;
+            document.getElementById('editTripStartDate').value = trip.startDate;
+            document.getElementById('editTripEndDate').value = trip.endDate;
             flatpickr("#editTripStartDate", { dateFormat: "Y-m-d", allowInput: true });
             flatpickr("#editTripEndDate", { dateFormat: "Y-m-d", allowInput: true });
             const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
