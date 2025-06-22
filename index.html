@@ -681,14 +681,26 @@
                 departures: []
             };
             tripData.trips.push(newTrip);
-            currentTrip = newTrip;
             // Hide modal, reset form
             const modal = bootstrap.Modal.getInstance(document.getElementById('newTripModal'));
             if (modal) modal.hide();
             document.getElementById('newTripForm').reset();
-            // Show trip detail view for new trip
-            showTripContent();
-            setUnsavedChanges(true); // Mark as unsaved until user saves
+            saveAuthorized = true; // Authorize this save
+            setLoading(true);
+            await saveData(); // Save first, then show
+            // Reload data to get the new trip with any backend changes
+            await loadData();
+            lastSavedTripData = deepClone(tripData);
+            // Find the trip by id in the reloaded data
+            currentTrip = tripData.trips.find(t => t.id === newTrip.id);
+            setLoading(false);
+            if (currentTrip) {
+                showTripContent();
+                setUnsavedChanges(false); // No unsaved changes after save
+            } else {
+                alert('Trip was created but could not be found after saving. Please refresh.');
+                showTripSelection();
+            }
         }
 
         // On trip selection, show trip detail view and setup unsaved logic
