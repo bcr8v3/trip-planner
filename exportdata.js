@@ -339,10 +339,11 @@ class TripPDFExporter {
                 
                 eventY += eventHeight;
             });
-        }
-        
+        }        
         return y + cardHeight;
-    }    // Show/hide loading overlay
+    }
+
+    // Show/hide loading overlay
     showLoadingState(show) {
         let loadingOverlay = document.getElementById('pdfLoadingOverlay');
         
@@ -400,13 +401,30 @@ class TripPDFExporter {
 async function exportCurrentTripToPDF() {
     console.log('Export button clicked');
     
-    if (!window.currentTrip) {
-        alert('No trip selected for export');
+    // Try multiple ways to access the current trip
+    let trip = null;
+    
+    // Check if currentTrip exists in global scope
+    if (typeof currentTrip !== 'undefined' && currentTrip) {
+        trip = currentTrip;
+        console.log('Found currentTrip in global scope:', trip.name);
+    }
+    // Fallback to window.currentTrip
+    else if (window.currentTrip) {
+        trip = window.currentTrip;
+        console.log('Found currentTrip on window object:', trip.name);
+    }
+    
+    if (!trip) {
+        console.error('No trip found. currentTrip:', typeof currentTrip !== 'undefined' ? currentTrip : 'undefined');
+        console.error('window.currentTrip:', window.currentTrip);
+        alert('No trip selected for export. Please select a trip first.');
         return;
     }
     
+    console.log('Exporting trip:', trip.name);
     const exporter = new TripPDFExporter();
-    await exporter.exportTripToPDF(window.currentTrip);
+    await exporter.exportTripToPDF(trip);
 }
 
 // Initialize when page loads
