@@ -103,7 +103,10 @@ class TripPDFExporter {
         document.body.appendChild(tempContainer);
         await new Promise(resolve => setTimeout(resolve, 500));
         try {
-            await window.html2pdf().from(tempContainer).save();
+            // Set filename to trip name + ' Itinerary.pdf'
+            const safeName = (trip && trip.name ? trip.name.replace(/[^a-zA-Z0-9\s]/g, '').trim() : 'Trip');
+            const filename = `${safeName} Itinerary.pdf`;
+            await window.html2pdf().set({ filename }).from(tempContainer).save();
         } finally {
             document.body.removeChild(tempContainer);
         }
