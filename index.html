@@ -130,22 +130,15 @@
             align-items: flex-start;
         }
         .event-form .input-group {
+            display: flex;
+            align-items: center;
             width: 220px;
             max-width: 100%;
         }
         .event-form .input-group input.form-control {
-            border-radius: 8px 0 0 8px;
-            border: 2px solid #b3d0ff;
-            background: #f4faff;
-            color: #1a1a1a;
-            font-size: 1rem;
-            padding: 8px 10px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .event-form .input-group input.form-control:focus {
-            border-color: #339af0;
-            background: #e7f3ff;
-            box-shadow: 0 0 0 2px #a5d8ff55;
+            flex: 1 1 auto;
+            min-width: 0;
+            width: 100%;
         }
         .event-form .input-group-text {
             border-radius: 0 8px 8px 0;
@@ -154,6 +147,9 @@
             border-left: none;
             color: #339af0;
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
         .event-form .input-group input.form-control::placeholder {
             color: #8bb3d9;
@@ -221,6 +217,14 @@
         .back-button:hover {
             background: #e9ecef;
         }
+        .edit-trip-btn {
+            background-color: rgba(255, 193, 7, 0.5) !important; /* lighter yellow */
+            color: #856404 !important;
+            border: none;
+        }
+        .edit-trip-btn:hover {
+            background-color: rgba(255, 193, 7, 0.7) !important;
+        }
     </style>
 </head>
 <body>
@@ -260,7 +264,7 @@
                 <div class="d-flex align-items-center gap-3">
                     <button id="backToTripsBtn" class="back-button" onclick="showTripSelection()">← Back to Trips</button>
                     <h2 id="tripTitle">Trip Details</h2>
-                    <button id="editTripDatesBtn" class="btn btn-warning ms-3" style="display:none;" onclick="showEditTripModal()">Edit Trip Dates</button>
+                    <button id="editTripDatesBtn" class="btn btn-warning ms-3 edit-trip-btn" style="display:none;" onclick="showEditTripModal()">Edit Trip Info</button>
                 </div>
                 <button class="btn btn-outline-secondary" onclick="logout()">Logout</button>
             </div>
@@ -544,12 +548,12 @@
         function loadTripsList() {
             const tripsList = document.getElementById('tripsList');
             tripsList.innerHTML = '';
-            
             tripData.trips.forEach(trip => {
                 const card = document.createElement('div');
                 card.className = 'trip-card';
-                const startDate = new Date(trip.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                const endDate = new Date(trip.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                // Use the same date logic as the calendar (start +1 day, end +1 day)
+                const startDate = new Date(new Date(trip.startDate + 'T00:00:00').getTime() + 24*60*60*1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                const endDate = new Date(new Date(trip.endDate + 'T00:00:00').getTime() + 24*60*60*1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                 
                 card.innerHTML = `
                     <h3 class="h5 mb-3">${trip.name}</h3>
@@ -559,9 +563,11 @@
                         <span class="badge bg-primary me-2">${trip.activities.length} Activities</span>
                         <span class="badge bg-danger">${trip.departures.length} Departures</span>
                     </p>
-                    <button class="btn btn-primary w-100" onclick="selectTrip('${trip.id}')">View Trip</button>
+                    <button class="btn btn-primary w-100 mb-2" onclick="selectTrip('${trip.id}')">View Trip</button>
+                    <button class="btn btn-warning edit-trip-btn w-100" onclick="showEditTripModalFromList('${trip.id}')">Edit Trip Info</button>
                 `;
-                tripsList.appendChild(card);            });
+                tripsList.appendChild(card);
+            });
         }
         
         // Show trip selection view
@@ -667,7 +673,13 @@
             const endTimeContainer = document.querySelector('.activity-only');
             const addButton = document.getElementById('addEventButton');
             form.style.display = 'grid';
-            endTimeContainer.style.display = type === 'activity' ? 'block' : 'none';
+            // Only show end time for activities
+            if (type === 'activity') {
+                endTimeContainer.style.display = 'block';
+            } else {
+                endTimeContainer.style.display = 'none';
+                document.getElementById('eventEndTime').value = '';
+            }
             addButton.textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
             setupDateAndTimePickers();
             form.onsubmit = (e) => {
@@ -781,7 +793,6 @@
                 document.getElementById('calendar').innerHTML = '<p class="text-muted">Select a trip to view its calendar</p>';
                 return;
             }
-
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
             // Create date range with timezone handling
