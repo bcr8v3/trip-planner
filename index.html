@@ -168,7 +168,18 @@
             width: 100%;
         }
         .event-form .event-times-row .input-group {
-            width: 120px;
+            width: 180px;
+            max-width: 100%;
+        }
+        .event-form .event-times-row .activity-only {
+            width: 180px;
+            max-width: 100%;
+            display: flex !important;
+            align-items: center;
+        }
+        .event-form .input-group input.form-control {
+            min-width: 0;
+            width: 100%;
         }
         .event-form .full-width {
             width: 100%;
@@ -249,6 +260,7 @@
                 <div class="d-flex align-items-center gap-3">
                     <button id="backToTripsBtn" class="back-button" onclick="showTripSelection()">← Back to Trips</button>
                     <h2 id="tripTitle">Trip Details</h2>
+                    <button id="editTripDatesBtn" class="btn btn-warning ms-3" style="display:none;" onclick="showEditTripModal()">Edit Trip Dates</button>
                 </div>
                 <button class="btn btn-outline-secondary" onclick="logout()">Logout</button>
             </div>
@@ -314,6 +326,38 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" onclick="createNewTrip()" data-original-text="Create Trip">Create Trip</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Trip Modal (Master only) -->
+        <div class="modal fade" id="editTripModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Trip Dates</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editTripForm">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="editTripName" placeholder="Trip Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="editTripKey" placeholder="Access Key" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="editTripStartDate" placeholder="Start Date" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="editTripEndDate" placeholder="End Date" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="saveTripEdits()" data-original-text="Save Changes">Save Changes</button>
                     </div>
                 </div>
             </div>
@@ -453,6 +497,7 @@
                     document.getElementById('mainContent').style.display = 'block';
                     document.getElementById('backToTripsBtn').style.display = 'block';
                     loadTripsList();
+                    updateEditTripBtnVisibility();
                 } else {
                     const trip = tripData.trips.find(t => t.key === key);
                     if (trip) {
@@ -466,6 +511,7 @@
                         document.getElementById('mainContent').style.display = 'block'; 
                         document.getElementById('tripTitle').textContent = trip.name;
                         document.getElementById('backToTripsBtn').style.display = 'none'; // Hide "Back to Trips" for guests
+                        updateEditTripBtnVisibility();
                         updateCalendar();
                     } else {
                         alert('Invalid access key');
@@ -528,16 +574,16 @@
             currentTrip = tripData.trips.find(t => t.id === tripId);
             if (currentTrip) {
                 document.getElementById('tripTitle').textContent = currentTrip.name;
-                document.getElementById('calendar').innerHTML = ''; // Clear existing calendar
+                document.getElementById('calendar').innerHTML = '';
                 document.getElementById('tripSelection').style.display = 'none';
                 document.getElementById('tripContent').style.display = 'block';
-                document.getElementById('backToTripsBtn').style.display = 'block'; // Show back button for master
+                document.getElementById('backToTripsBtn').style.display = 'block';
+                updateEditTripBtnVisibility();
                 updateCalendar();
             }
         }// Setup date and time pickers for event form
         function setupDateAndTimePickers() {
             if (!currentTrip) return;
-            
             // Clear any existing flatpickr instances to prevent conflicts
             const existingPickers = ['eventDate', 'eventTime', 'eventEndTime'];
             existingPickers.forEach(id => {
@@ -546,43 +592,19 @@
                     element._flatpickr.destroy();
                 }
             });
-            
             // --- Date Picker ---
             const tripStart = new Date(currentTrip.startDate);
             const tripEnd = new Date(currentTrip.endDate);
-            let allowedDates = [];
-            let d = new Date(tripStart);
-            while (d <= tripEnd) {
-                allowedDates.push(d.toISOString().split('T')[0]);
-                d.setDate(d.getDate() + 1);
-            }
-            // Determine if trip is within one month
-            const singleMonth = tripStart.getFullYear() === tripEnd.getFullYear() && tripStart.getMonth() === tripEnd.getMonth();
-            const dateFormat = singleMonth ? "d" : "m/d/Y";
-            const placeholder = singleMonth ? "dd" : "mm/dd/yyyy";
             const eventDateInput = document.getElementById('eventDate');
-            const datePicker = flatpickr(eventDateInput, {
-                dateFormat: dateFormat,
+            flatpickr(eventDateInput, {
+                dateFormat: 'Y-m-d',
                 allowInput: true,
-                clickOpens: false,
-                enable: allowedDates,
-                onOpen: function(selectedDates, dateStr, instance) {
-                    instance.input.placeholder = placeholder;
-                },
-                onClose: function(selectedDates, dateStr, instance) {
-                    if (!instance.input.value) instance.input.placeholder = "Date";
-                }
+                minDate: currentTrip.startDate,
+                maxDate: currentTrip.endDate,
+                clickOpens: true,
+                disableMobile: true
             });
-            // Open picker on icon click or input focus
-            const dateBtn = eventDateInput.parentElement.querySelector('.input-group-text');
-            if (dateBtn) dateBtn.onclick = () => datePicker.open();
-            eventDateInput.onfocus = function() {
-                this.placeholder = placeholder;
-                datePicker.open();
-            };
-            eventDateInput.onblur = function() {
-                if (!this.value) this.placeholder = "Date";
-            };
+            eventDateInput.placeholder = 'YYYY-MM-DD';
             // --- Time Picker (Start) ---
             const eventTimeInput = document.getElementById('eventTime');
             const timePicker = flatpickr(eventTimeInput, {
@@ -766,8 +788,10 @@
             const start = new Date(currentTrip.startDate + 'T00:00:00');
             const end = new Date(currentTrip.endDate + 'T00:00:00');
             const dates = [];
-            for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
+            let date = new Date(start);
+            while (date <= end) {
                 dates.push(new Date(date));
+                date.setDate(date.getDate() + 1);
             }
 
             // Helper to validate event date
@@ -909,6 +933,45 @@
             }
         });
 
+        // Show Edit Trip Modal (Master only)
+        function showEditTripModal() {
+            if (!currentTrip) return;
+            document.getElementById('editTripName').value = currentTrip.name;
+            document.getElementById('editTripKey').value = currentTrip.key;
+            document.getElementById('editTripStartDate').value = currentTrip.startDate;
+            document.getElementById('editTripEndDate').value = currentTrip.endDate;
+            flatpickr("#editTripStartDate", { dateFormat: "Y-m-d", allowInput: true });
+            flatpickr("#editTripEndDate", { dateFormat: "Y-m-d", allowInput: true });
+            const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
+            modal.show();
+        }
+        // Save Trip Edits (Master only)
+        async function saveTripEdits() {
+            const name = document.getElementById('editTripName').value.trim();
+            const key = document.getElementById('editTripKey').value.trim();
+            const startDate = document.getElementById('editTripStartDate').value.trim();
+            const endDate = document.getElementById('editTripEndDate').value.trim();
+            if (!name || !key || !startDate || !endDate || isNaN(Date.parse(startDate)) || isNaN(Date.parse(endDate))) {
+                alert('Please enter a valid trip name, key, start date, and end date.');
+                return;
+            }
+            currentTrip.name = name;
+            currentTrip.key = key;
+            currentTrip.startDate = startDate;
+            currentTrip.endDate = endDate;
+            await saveData();
+            document.getElementById('tripTitle').textContent = name;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editTripModal'));
+            if (modal) modal.hide();
+            updateCalendar();
+            loadTripsList && loadTripsList();
+        }
+        // Show/hide Edit Trip Dates button based on isMaster
+        function updateEditTripBtnVisibility() {
+            const btn = document.getElementById('editTripDatesBtn');
+            if (btn) btn.style.display = isMaster ? 'inline-block' : 'none';
+        }
+        // Call updateEditTripBtnVisibility when trip is selected or after login
     </script>
 </body>
 </html>
