@@ -437,6 +437,7 @@
         // Save data using Netlify function
         async function saveData() {
             if (isLoading) return;
+            console.log('saveData() called - this should only happen when Save button is clicked or trip is deleted');
             setLoading(true);
             
             try {
@@ -702,7 +703,7 @@
             currentTrip.key = key;
             currentTrip.startDate = startDate;
             currentTrip.endDate = endDate;
-            await saveData();
+            markTripEdit(); // Mark as unsaved instead of auto-saving
             updateTripTitleWithDates();
             const modal = bootstrap.Modal.getInstance(document.getElementById('editTripModal'));
             if (modal) modal.hide();
@@ -1120,7 +1121,7 @@
                     const endTime = document.getElementById('eventEndTime').value || null;
                     currentTrip.activities[index] = { name, date, startTime: time, endTime };
                 }
-                await saveData();
+                markTripEdit(); // Mark as unsaved instead of auto-saving
                 document.getElementById('eventForm').reset();
                 document.getElementById('eventForm').style.display = 'none';
                 updateCalendar(); // Try again
