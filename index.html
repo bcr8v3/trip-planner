@@ -437,7 +437,35 @@
         // Save data using Netlify function
         async function saveData() {
             if (isLoading) return;
-            console.log('saveData() called - this should only happen when Save button is clicked or trip is deleted');
+            
+            // EMERGENCY DEBUGGING - Find out what's calling this
+            console.log('🚨🚨🚨 SAVEDATA CALLED - INVESTIGATING...');
+            console.trace('Full call stack for saveData():');
+            
+            // Check if this is being called from the Save button
+            const saveButton = document.getElementById('saveTripBtn');
+            if (saveButton) {
+                console.log('Save button exists, disabled state:', saveButton.disabled);
+                console.log('Save button text:', saveButton.textContent);
+            }
+            
+            // Check unsaved changes state
+            console.log('Unsaved changes flag:', unsavedChanges);
+            console.log('Current trip:', currentTrip?.name || 'None');
+            console.log('Is master:', isMaster);
+            
+            // BLOCK ALL SAVES EXCEPT EXPLICIT USER ACTIONS
+            const stack = new Error().stack;
+            const isFromSaveButton = stack.includes('HTMLButtonElement.onclick') || stack.includes('save button clicked');
+            const isFromDeleteTrip = stack.includes('deleteCurrentTrip');
+            
+            if (!isFromSaveButton && !isFromDeleteTrip) {
+                console.log('🛑 BLOCKING UNAUTHORIZED SAVE ATTEMPT!');
+                console.log('This save was not triggered by Save button or Delete trip');
+                return; // Block the save
+            }
+            
+            console.log('✅ Authorized save proceeding...');
             setLoading(true);
             
             try {
@@ -531,12 +559,14 @@
         function ensureSaveButton() {
             let saveBtn = document.getElementById('saveTripBtn');
             if (!saveBtn) {
+                console.log('🔧 Creating new Save button');
                 saveBtn = document.createElement('button');
                 saveBtn.id = 'saveTripBtn';
                 saveBtn.className = 'btn btn-success ms-3';
                 saveBtn.textContent = 'Save';
                 saveBtn.disabled = true;
                 saveBtn.onclick = async function() {
+                    console.log('💾 Save button clicked by user');
                     await saveData();
                     lastSavedTripData = deepClone(tripData);
                     setUnsavedChanges(false);
@@ -544,6 +574,8 @@
                 // Insert after trip title
                 const titleBar = document.querySelector('.top-bar .d-flex');
                 if (titleBar) titleBar.appendChild(saveBtn);
+            } else {
+                console.log('✅ Save button already exists, not creating duplicate');
             }
         }
 
@@ -563,6 +595,8 @@
 
         // Mark unsaved changes on any trip edit
         function markTripEdit() {
+            console.log('📝 markTripEdit() called - marking changes as unsaved');
+            console.trace('Call stack for markTripEdit():');
             setUnsavedChanges(true);
         }
 
