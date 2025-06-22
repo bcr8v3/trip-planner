@@ -97,9 +97,9 @@ class TripPDFExporter {
             document.head.appendChild(script);        });
     }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
-        // Minimal test: plain div, no styles
+        // Restore full trip export with styled day cards and trip details
         const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = '<h1>HELLO PDF</h1><p>If you see this, html2pdf works.</p>';
+        this.populateContainerWithTripContent(tempContainer, trip);
         document.body.appendChild(tempContainer);
         await new Promise(resolve => setTimeout(resolve, 500));
         try {
