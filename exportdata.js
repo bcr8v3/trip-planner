@@ -97,55 +97,13 @@ class TripPDFExporter {
             document.head.appendChild(script);        });
     }    // Generate the actual PDF document using html2pdf.js
     async generatePDF(trip) {
-        console.log('Creating PDF document with html2pdf.js...');
-        // Hide loading overlay if present
-        this.showLoadingState(false);
-        // Make the container fully visible in the viewport for testing
+        // Minimal test: plain div, no styles
         const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'fixed';
-        tempContainer.style.left = '50px';
-        tempContainer.style.top = '50px';
-        tempContainer.style.width = '600px';
-        tempContainer.style.height = '200px';
-        tempContainer.style.background = 'white';
-        tempContainer.style.zIndex = '9999';
-        tempContainer.style.border = '3px solid red';
-        tempContainer.style.display = 'flex';
-        tempContainer.style.alignItems = 'center';
-        tempContainer.style.justifyContent = 'center';
-        tempContainer.id = 'pdfTempContainer';
-
-        // TEST: Always show a big red message
-        tempContainer.innerHTML = '<div style="font-size:40px;color:red;font-weight:bold;">PDF TEST: If you see this, html2pdf works!</div>';
-
+        tempContainer.innerHTML = '<h1>HELLO PDF</h1><p>If you see this, html2pdf works.</p>';
         document.body.appendChild(tempContainer);
-        // Wait for the browser to render the content
         await new Promise(resolve => setTimeout(resolve, 500));
-        // Log the HTML being captured
-        console.log('TEMP CONTAINER HTML:', tempContainer.outerHTML);
-        // Log if html2pdf is present
-        console.log('window.html2pdf:', typeof window.html2pdf);
         try {
-            const options = {
-                margin: 10,
-                filename: 'PDF_TEST.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 1.5,
-                    useCORS: true,
-                    allowTaint: true,
-                    letterRendering: true,
-                    backgroundColor: '#ffffff'
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                }
-            };
-            console.log('Generating PDF with html2pdf...');
-            await window.html2pdf().set(options).from(tempContainer).save();
-            console.log('PDF generated successfully!');
+            await window.html2pdf().from(tempContainer).save();
         } finally {
             document.body.removeChild(tempContainer);
         }
