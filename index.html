@@ -10,6 +10,11 @@
             background-color: #f0f2f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            max-width: 100vw;
+            overflow-x: hidden;
         }
         .login-container {
             max-width: 400px;
@@ -20,26 +25,29 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .main-container {
-            display: none;
             max-width: 1400px;
             margin: 40px auto;
-            padding: 0;
+            padding: 0 10px;
+            width: 100%;
         }
         .top-bar {
             background: white;
-            padding: 20px;
+            padding: 20px 10px;
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
         .trips-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            padding: 20px;
+            padding: 20px 0;
+            width: 100%;
         }
         .trip-card {
             background: white;
@@ -47,6 +55,9 @@
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
         }
         .trip-card:hover {
             transform: translateY(-2px);
@@ -56,16 +67,20 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
-            padding: 20px;
+            padding: 20px 0;
+            width: 100%;
         }        .day-card {
             border: 2px solid #e3e6ea;
             border-radius: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             background: #fff;
             margin-bottom: 24px;
-            padding: 18px 22px;
+            padding: 18px 12px;
             transition: box-shadow 0.2s;
-            min-width: 260px;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-wrap: break-word;
         }
         .day-card:hover {
             box-shadow: 0 6px 18px rgba(0,0,0,0.10);
@@ -74,6 +89,7 @@
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 10px;
+            word-break: break-word;
         }
         .day-card .list-group-item {
             border: none;
@@ -83,9 +99,25 @@
         }
         .event {
             margin: 8px 0;
-            padding: 12px;
+            padding: 12px 8px;
             border-radius: 8px;
             font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            word-break: break-word;
+        }
+        .event .event-delete-btn {
+            margin-left: 10px;
+            font-size: 1.3em;
+            color: #dc3545 !important;
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .event .event-delete-btn:focus {
+            outline: none;
         }
         .arrival { 
             background-color: #d4edda; 
@@ -102,22 +134,26 @@
         .add-event-container {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 20px 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             margin-top: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
         .event-type-buttons {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .event-type-button {
-            flex: 1;
+            flex: 1 1 100px;
             padding: 12px;
             border: none;
             border-radius: 8px;
             font-weight: 500;
             transition: opacity 0.2s;
+            min-width: 0;
         }
         .event-type-button.arrival { background-color: #28a745; color: white; }
         .event-type-button.activity { background-color: #007bff; color: white; }
@@ -128,11 +164,12 @@
             flex-direction: column;
             gap: 12px;
             align-items: flex-start;
+            width: 100%;
         }
         .event-form .input-group {
             display: flex;
             align-items: center;
-            width: 220px;
+            width: 100%;
             max-width: 100%;
             flex-wrap: nowrap;
         }
@@ -165,13 +202,14 @@
             display: flex;
             gap: 10px;
             width: 100%;
+            flex-wrap: wrap;
         }
         .event-form .event-times-row .input-group {
-            width: 180px;
+            width: 100%;
             max-width: 100%;
         }
         .event-form .event-times-row .activity-only {
-            width: 230px;
+            width: 100%;
             max-width: 100%;
             display: flex !important;
             align-items: center;
@@ -197,8 +235,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: rgba(255, 255, 255, 0.9);
             justify-content: center;
             align-items: center;
@@ -216,12 +254,14 @@
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s;
+            width: 100%;
+            max-width: 200px;
         }
         .back-button:hover {
             background: #e9ecef;
         }
         .edit-trip-btn {
-            background-color: rgba(255, 193, 7, 0.5) !important; /* lighter yellow */
+            background-color: rgba(255, 193, 7, 0.5) !important;
             color: #856404 !important;
             border: none;
         }
@@ -237,6 +277,67 @@
             background-color: #138496 !important;
             border-color: #117a8b !important;
             color: white !important;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 900px) {
+            .main-container {
+                max-width: 100vw;
+                padding: 0 4px;
+            }
+            .calendar-grid, .trips-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 10px 0;
+            }
+            .day-card, .trip-card {
+                padding: 14px 6px;
+                margin-bottom: 16px;
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 12px 4px;
+            }
+        }
+        @media (max-width: 600px) {
+            .main-container {
+                max-width: 100vw;
+                padding: 0 2px;
+            }
+            .calendar-grid, .trips-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 6px 0;
+            }
+            .day-card, .trip-card {
+                padding: 10px 2px;
+                margin-bottom: 10px;
+                font-size: 0.97em;
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding: 8px 2px;
+            }
+            .event {
+                font-size: 0.92rem;
+                padding: 8px 4px;
+            }
+            .event-type-buttons {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .event-form .event-times-row {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .back-button {
+                width: 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -302,7 +403,10 @@
 
                 <!-- Unified Event Form -->
                 <form id="eventForm" class="event-form" style="display: none;">
-                    <label for="eventDate" class="form-label">Date</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label for="eventDate" class="form-label mb-0">Date</label>
+                        <button type="button" id="closeEventFormBtn" class="btn btn-link p-0 text-danger" title="Close" style="font-size:1.5em;line-height:1;">&times;</button>
+                    </div>
                     <div class="input-group">
                         <input type="text" class="form-control" id="eventDate" placeholder="Date" required>
                         <span class="input-group-text"><i class="bi bi-calendar"></i></span>
@@ -647,6 +751,61 @@
             markTripEdit();
             updateCalendar();
             document.getElementById('eventForm').style.display = 'none';
+        }
+
+        // Delete an event (arrival, activity, departure) by type, date, and index
+        function deleteEvent(type, dateStr, idx) {
+            if (!currentTrip || !['arrivals','activities','departures'].includes(type)) return;
+            // Find the correct event array filtered by date
+            let arr = currentTrip[type];
+            // Find all events for this date
+            const eventsForDate = arr.map((e, i) => ({...e, _idx: i})).filter(e => e.date === dateStr);
+            if (idx >= 0 && idx < eventsForDate.length) {
+                // Remove from the main array by original index
+                arr.splice(eventsForDate[idx]._idx, 1);
+                markTripEdit();
+                updateCalendar();
+            }
+        }
+        // Delete an event (arrival, activity, departure) by type, date, and sorted index
+        function deleteEventSorted(type, dateStr, sortedIdx) {
+            if (!currentTrip || !['arrivals','activities','departures'].includes(type)) return;
+            let arr = currentTrip[type];
+            // Sort the array for this date the same way as in updateCalendar
+            let sorted;
+            const parseTime = t => {
+                if (!t) return 0;
+                const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
+                    let hour = parseInt(h);
+                    if (ampm === 'PM' && hour !== 12) hour += 12;
+                    if (ampm === 'AM' && hour === 12) hour = 0;
+                    return hour.toString().padStart(2, '0') + ':' + min;
+                })}:00`);
+                return d.getTime();
+            };
+            if (type === 'arrivals' || type === 'departures') {
+                sorted = arr
+                    .map((e, i) => ({...e, _idx: i}))
+                    .filter(e => e.date === dateStr)
+                    .sort((a, b) => parseTime(a.time) - parseTime(b.time));
+            } else if (type === 'activities') {
+                sorted = arr
+                    .map((e, i) => ({...e, _idx: i}))
+                    .filter(e => e.date === dateStr)
+                    .sort((a, b) => {
+                        const aStart = parseTime(a.startTime);
+                        const bStart = parseTime(b.startTime);
+                        if (aStart !== bStart) return aStart - bStart;
+                        const aEnd = parseTime(a.endTime);
+                        const bEnd = parseTime(b.endTime);
+                        return aEnd - bEnd;
+                    });
+            }
+            if (sortedIdx >= 0 && sortedIdx < sorted.length) {
+                arr.splice(sorted[sortedIdx]._idx, 1);
+                markTripEdit();
+                updateCalendar();
+            }
         }
 
         // When trip detail view is shown (existing or new trip)
@@ -994,6 +1153,16 @@
             }
         }
 
+        // Add close button handler for event form
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeBtn = document.getElementById('closeEventFormBtn');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    document.getElementById('eventForm').style.display = 'none';
+                };
+            }
+        });
+
         // Show event form
         function showEventForm(type) {
             const form = document.getElementById('eventForm');
@@ -1039,6 +1208,8 @@
                     endTimeContainer.style.display = 'none';
                 }
             };
+            // Show the form if it was hidden
+            form.style.display = 'grid';
         }
 
         // Update calendar
@@ -1096,18 +1267,30 @@
                 dayCard.innerHTML = `<div class="card-title">${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>`;
                 let hasEvents = false;
                 let eventsHtml = '';
-                // Add arrivals
-                currentTrip.arrivals
-                    .filter(a => a.date === dateStr)
-                    .forEach(arrival => {
-                        hasEvents = true;
-                        eventsHtml += `<div class="event arrival">🛬 ${arrival.time} - ${arrival.name} arrives</div>`;
-                    });
-                // Add activities (sorted by startTime, then endTime)
-                currentTrip.activities
+                // Add arrivals (sorted by time)
+                const sortedArrivals = currentTrip.arrivals
                     .filter(a => a.date === dateStr)
                     .sort((a, b) => {
-                        // Parse start times
+                        const parseTime = t => {
+                            if (!t) return 0;
+                            const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
+                                let hour = parseInt(h);
+                                if (ampm === 'PM' && hour !== 12) hour += 12;
+                                if (ampm === 'AM' && hour === 12) hour = 0;
+                                return hour.toString().padStart(2, '0') + ':' + min;
+                            })}:00`);
+                            return d.getTime();
+                        };
+                        return parseTime(a.time) - parseTime(b.time);
+                    });
+                sortedArrivals.forEach((arrival, idx) => {
+                    hasEvents = true;
+                    eventsHtml += `<div class="event arrival d-flex justify-content-between align-items-center">🛬 ${arrival.time} - ${arrival.name} arrives <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Arrival' style='font-size:1.3em;line-height:1;' onclick='deleteEventSorted("arrivals", "${dateStr}", ${idx})'>&times;</button></div>`;
+                });
+                // Add activities (sorted by startTime, then endTime)
+                const sortedActivities = currentTrip.activities
+                    .filter(a => a.date === dateStr)
+                    .sort((a, b) => {
                         const parseTime = t => {
                             if (!t) return 0;
                             const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
@@ -1125,18 +1308,31 @@
                         const aEnd = parseTime(a.endTime);
                         const bEnd = parseTime(b.endTime);
                         return aEnd - bEnd;
-                    })
-                    .forEach(activity => {
-                        hasEvents = true;
-                        eventsHtml += `<div class="event activity">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name}</div>`;
                     });
-                // Add departures
-                currentTrip.departures
+                sortedActivities.forEach((activity, idx) => {
+                    hasEvents = true;
+                    eventsHtml += `<div class="event activity d-flex justify-content-between align-items-center">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name} <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Activity' style='font-size:1.3em;line-height:1;' onclick='deleteEventSorted("activities", "${dateStr}", ${idx})'>&times;</button></div>`;
+                });
+                // Add departures (sorted by time)
+                const sortedDepartures = currentTrip.departures
                     .filter(d => d.date === dateStr)
-                    .forEach(departure => {
-                        hasEvents = true;
-                        eventsHtml += `<div class="event departure">🛫 ${departure.time} - ${departure.name} departs</div>`;
+                    .sort((a, b) => {
+                        const parseTime = t => {
+                            if (!t) return 0;
+                            const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
+                                let hour = parseInt(h);
+                                if (ampm === 'PM' && hour !== 12) hour += 12;
+                                if (ampm === 'AM' && hour === 12) hour = 0;
+                                return hour.toString().padStart(2, '0') + ':' + min;
+                            })}:00`);
+                            return d.getTime();
+                        };
+                        return parseTime(a.time) - parseTime(b.time);
                     });
+                sortedDepartures.forEach((departure, idx) => {
+                    hasEvents = true;
+                    eventsHtml += `<div class="event departure d-flex justify-content-between align-items-center">🛫 ${departure.time} - ${departure.name} departs <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Departure' style='font-size:1.3em;line-height:1;' onclick='deleteEventSorted("departures", "${dateStr}", ${idx})'>&times;</button></div>`;
+                });
                 if (!hasEvents) {
                     eventsHtml = '<div class="text-muted">No events</div>';
                 }
