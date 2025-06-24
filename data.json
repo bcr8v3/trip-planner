@@ -9,11 +9,6 @@
       "endDate": "2025-07-16",
       "arrivals": [
         {
-          "name": "Mike",
-          "date": "2025-07-10",
-          "time": "09:00"
-        },
-        {
           "name": "Lena",
           "date": "2025-07-10",
           "time": "13:00"
