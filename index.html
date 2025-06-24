@@ -364,7 +364,7 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     
     <!-- Main Content -->
-    <div id="mainContent" class="main-container">
+    <div id="mainContent" class="main-container" style="display: none;">
         <!-- Trip Selection View (Master only) -->
         <div id="tripSelection">
             <div class="top-bar">
@@ -405,7 +405,9 @@
                 <form id="eventForm" class="event-form" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label for="eventDate" class="form-label mb-0">Date</label>
-                        <button type="button" id="closeEventFormBtn" class="btn btn-link p-0 text-danger" title="Close" style="font-size:1.5em;line-height:1;">&times;</button>
+                        <button type="button" id="collapseEventFormBtn" class="btn btn-link p-0 text-secondary" title="Collapse" style="font-size:1.5em;line-height:1;">
+                            <i class="bi bi-chevron-up"></i>
+                        </button>
                     </div>
                     <div class="input-group">
                         <input type="text" class="form-control" id="eventDate" placeholder="Date" required>
@@ -1155,9 +1157,9 @@
 
         // Add close button handler for event form
         document.addEventListener('DOMContentLoaded', function() {
-            const closeBtn = document.getElementById('closeEventFormBtn');
-            if (closeBtn) {
-                closeBtn.onclick = function() {
+            const collapseBtn = document.getElementById('collapseEventFormBtn');
+            if (collapseBtn) {
+                collapseBtn.onclick = function() {
                     document.getElementById('eventForm').style.display = 'none';
                 };
             }
@@ -1285,7 +1287,7 @@
                     });
                 sortedArrivals.forEach((arrival, idx) => {
                     hasEvents = true;
-                    eventsHtml += `<div class="event arrival d-flex justify-content-between align-items-center">🛬 ${arrival.time} - ${arrival.name} arrives <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Arrival' style='font-size:1.3em;line-height:1;' onclick='deleteEventSorted("arrivals", "${dateStr}", ${idx})'>&times;</button></div>`;
+                    eventsHtml += `<div class="event arrival d-flex justify-content-between align-items-center">🛬 ${arrival.time} - ${arrival.name} arrives <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Arrival' style='font-size:1.3em;' onclick='deleteEventSorted("arrivals", "${dateStr}", ${idx})'>&times;</button></div>`;
                 });
                 // Add activities (sorted by startTime, then endTime)
                 const sortedActivities = currentTrip.activities
@@ -1311,7 +1313,7 @@
                     });
                 sortedActivities.forEach((activity, idx) => {
                     hasEvents = true;
-                    eventsHtml += `<div class="event activity d-flex justify-content-between align-items-center">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name} <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Activity' style='font-size:1.3em;line-height:1;' onclick='deleteEventSorted("activities", "${dateStr}", ${idx})'>&times;</button></div>`;
+                    eventsHtml += `<div class="event activity d-flex justify-content-between align-items-center">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name} <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Activity' style='font-size:1.3em;' onclick='deleteEventSorted("activities", "${dateStr}", ${idx})'>&times;</button></div>`;
                 });
                 // Add departures (sorted by time)
                 const sortedDepartures = currentTrip.departures
@@ -1331,7 +1333,7 @@
                     });
                 sortedDepartures.forEach((departure, idx) => {
                     hasEvents = true;
-                    eventsHtml += `<div class="event departure d-flex justify-content-between align-items-center">🛫 ${departure.time} - ${departure.name} departs <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Departure' style='font-size:1.3em;line-height:1;' onclick='deleteEventSorted("departures", "${dateStr}", ${idx})'>&times;</button></div>`;
+                    eventsHtml += `<div class="event departure d-flex justify-content-between align-items-center">🛫 ${departure.time} - ${departure.name} departs <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Departure' style='font-size:1.3em;' onclick='deleteEventSorted("departures", "${dateStr}", ${idx})'>&times;</button></div>`;
                 });
                 if (!hasEvents) {
                     eventsHtml = '<div class="text-muted">No events</div>';
