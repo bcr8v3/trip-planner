@@ -338,6 +338,18 @@
                 width: 100%;
                 max-width: 100%;
             }
+
+            /* Responsive styles for trip action buttons */
+            .top-bar .d-flex {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
+            .top-bar .d-flex .btn {
+                flex: 1 1 auto;
+                min-width: 120px;
+            }
         }
     </style>
 </head>
@@ -1269,71 +1281,76 @@
                 dayCard.innerHTML = `<div class="card-title">${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>`;
                 let hasEvents = false;
                 let eventsHtml = '';
-                // Add arrivals (sorted by time)
-                const sortedArrivals = currentTrip.arrivals
-                    .filter(a => a.date === dateStr)
-                    .sort((a, b) => {
-                        const parseTime = t => {
-                            if (!t) return 0;
-                            const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
-                                let hour = parseInt(h);
-                                if (ampm === 'PM' && hour !== 12) hour += 12;
-                                if (ampm === 'AM' && hour === 12) hour = 0;
-                                return hour.toString().padStart(2, '0') + ':' + min;
-                            })}:00`);
-                            return d.getTime();
-                        };
-                        return parseTime(a.time) - parseTime(b.time);
+                // --- Merge all events for this date into a single array ---
+                const mergedEvents = [];
+                // Arrivals
+                currentTrip.arrivals.filter(a => a.date === dateStr).forEach((a, idx) => {
+                    mergedEvents.push({
+                        type: 'arrival',
+                        time: a.time,
+                        name: a.name,
+                        idx,
+                        raw: a
                     });
-                sortedArrivals.forEach((arrival, idx) => {
-                    hasEvents = true;
-                    eventsHtml += `<div class="event arrival d-flex justify-content-between align-items-center">🛬 ${arrival.time} - ${arrival.name} arrives <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Arrival' style='font-size:1.3em;' onclick='deleteEventSorted("arrivals", "${dateStr}", ${idx})'>&times;</button></div>`;
                 });
-                // Add activities (sorted by startTime, then endTime)
-                const sortedActivities = currentTrip.activities
-                    .filter(a => a.date === dateStr)
-                    .sort((a, b) => {
-                        const parseTime = t => {
-                            if (!t) return 0;
-                            const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
-                                let hour = parseInt(h);
-                                if (ampm === 'PM' && hour !== 12) hour += 12;
-                                if (ampm === 'AM' && hour === 12) hour = 0;
-                                return hour.toString().padStart(2, '0') + ':' + min;
-                            })}:00`);
-                            return d.getTime();
-                        };
-                        const aStart = parseTime(a.startTime);
-                        const bStart = parseTime(b.startTime);
-                        if (aStart !== bStart) return aStart - bStart;
-                        // Tiebreaker: endTime
+                // Activities
+                currentTrip.activities.filter(a => a.date === dateStr).forEach((a, idx) => {
+                    mergedEvents.push({
+                        type: 'activity',
+                        time: a.startTime,
+                        endTime: a.endTime,
+                        name: a.name,
+                        idx,
+                        raw: a
+                    });
+                });
+                // Departures
+                currentTrip.departures.filter(d => d.date === dateStr).forEach((d, idx) => {
+                    mergedEvents.push({
+                        type: 'departure',
+                        time: d.time,
+                        name: d.name,
+                        idx,
+                        raw: d
+                    });
+                });
+                // --- Sort merged events by time (and endTime for activities as tiebreaker) ---
+                const parseTime = t => {
+                    if (!t) return 0;
+                    const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
+                        let hour = parseInt(h);
+                        if (ampm === 'PM' && hour !== 12) hour += 12;
+                        if (ampm === 'AM' && hour === 12) hour = 0;
+                        return hour.toString().padStart(2, '0') + ':' + min;
+                    })}:00`);
+                    return d.getTime();
+                };
+                mergedEvents.sort((a, b) => {
+                    const aTime = parseTime(a.time);
+                    const bTime = parseTime(b.time);
+                    if (aTime !== bTime) return aTime - bTime;
+                    // For activities, tiebreaker by endTime
+                    if (a.type === 'activity' && b.type === 'activity') {
                         const aEnd = parseTime(a.endTime);
                         const bEnd = parseTime(b.endTime);
                         return aEnd - bEnd;
-                    });
-                sortedActivities.forEach((activity, idx) => {
-                    hasEvents = true;
-                    eventsHtml += `<div class="event activity d-flex justify-content-between align-items-center">📅 ${activity.startTime}${activity.endTime ? ' - ' + activity.endTime : ''} - ${activity.name} <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Activity' style='font-size:1.3em;' onclick='deleteEventSorted("activities", "${dateStr}", ${idx})'>&times;</button></div>`;
+                    }
+                    return 0;
                 });
-                // Add departures (sorted by time)
-                const sortedDepartures = currentTrip.departures
-                    .filter(d => d.date === dateStr)
-                    .sort((a, b) => {
-                        const parseTime = t => {
-                            if (!t) return 0;
-                            const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
-                                let hour = parseInt(h);
-                                if (ampm === 'PM' && hour !== 12) hour += 12;
-                                if (ampm === 'AM' && hour === 12) hour = 0;
-                                return hour.toString().padStart(2, '0') + ':' + min;
-                            })}:00`);
-                            return d.getTime();
-                        };
-                        return parseTime(a.time) - parseTime(b.time);
-                    });
-                sortedDepartures.forEach((departure, idx) => {
+                // --- Render events in sorted order ---
+                let arrivalIdx = 0, activityIdx = 0, departureIdx = 0;
+                mergedEvents.forEach(ev => {
                     hasEvents = true;
-                    eventsHtml += `<div class="event departure d-flex justify-content-between align-items-center">🛫 ${departure.time} - ${departure.name} departs <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Departure' style='font-size:1.3em;' onclick='deleteEventSorted("departures", "${dateStr}", ${idx})'>&times;</button></div>`;
+                    if (ev.type === 'arrival') {
+                        eventsHtml += `<div class="event arrival d-flex justify-content-between align-items-center">🛬 ${ev.time} - ${ev.name} arrives <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Arrival' style='font-size:1.3em;' onclick='deleteEventSorted("arrivals", "${dateStr}", ${arrivalIdx})'>&times;</button></div>`;
+                        arrivalIdx++;
+                    } else if (ev.type === 'activity') {
+                        eventsHtml += `<div class="event activity d-flex justify-content-between align-items-center">📅 ${ev.time}${ev.endTime ? ' - ' + ev.endTime : ''} - ${ev.name} <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Activity' style='font-size:1.3em;' onclick='deleteEventSorted("activities", "${dateStr}", ${activityIdx})'>&times;</button></div>`;
+                        activityIdx++;
+                    } else if (ev.type === 'departure') {
+                        eventsHtml += `<div class="event departure d-flex justify-content-between align-items-center">🛫 ${ev.time} - ${ev.name} departs <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Departure' style='font-size:1.3em;' onclick='deleteEventSorted("departures", "${dateStr}", ${departureIdx})'>&times;</button></div>`;
+                        departureIdx++;
+                    }
                 });
                 if (!hasEvents) {
                     eventsHtml = '<div class="text-muted">No events</div>';
