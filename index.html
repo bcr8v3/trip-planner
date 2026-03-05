@@ -1462,21 +1462,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
+            // Attach critical event handlers first (before any async/CDN-dependent code)
+            var loginForm = document.getElementById('loginForm');
+            if (loginForm) loginForm.addEventListener('submit', function(e) { e.preventDefault(); login(); });
+            var deleteBtn = document.getElementById('deleteTripBtn');
+            if (deleteBtn) deleteBtn.onclick = deleteCurrentTrip;
+            var editTripModal = document.getElementById('editTripModal');
+            if (editTripModal) editTripModal.addEventListener('show.bs.modal', function() {
+                var btn = document.getElementById('deleteTripBtn');
+                if (btn) btn.onclick = deleteCurrentTrip;
+            });
+            var backBtn = document.getElementById('backToTripsBtn');
+            if (backBtn) backBtn.onclick = enhancedShowTripSelection;
+            // Load data and initialize date pickers (may fail if CDN is blocked)
             try {
                 await loadData();
                 lastSavedTripData = deepClone(tripData);
-                if (typeof initializeDatePickers === 'function') initializeDatePickers();
-                const loginForm = document.getElementById('loginForm');
-                if (loginForm) loginForm.addEventListener('submit', function(e) { e.preventDefault(); login(); });
-                const deleteBtn = document.getElementById('deleteTripBtn');
-                if (deleteBtn) deleteBtn.onclick = deleteCurrentTrip;
-                const editTripModal = document.getElementById('editTripModal');
-                if (editTripModal) editTripModal.addEventListener('show.bs.modal', function() {
-                    const btn = document.getElementById('deleteTripBtn');
-                    if (btn) btn.onclick = deleteCurrentTrip;
-                });
-                const backBtn = document.getElementById('backToTripsBtn');
-                if (backBtn) backBtn.onclick = enhancedShowTripSelection;
+                if (typeof flatpickr === 'function') initializeDatePickers();
             } catch (error) {
                 showToast('Error during initialization. Please refresh.', 'error');
             }
