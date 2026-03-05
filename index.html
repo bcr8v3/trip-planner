@@ -3,421 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Planner</title>    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Trip Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet"><style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #4f46e5;
+            --accent-light: #6366f1;
+            --accent-dark: #3730a3;
+            --arrival-bg: #d4edda;
+            --arrival-border: #28a745;
+            --activity-bg: #cce5ff;
+            --activity-border: #007bff;
+            --departure-bg: #f8d7da;
+            --departure-border: #dc3545;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --card-hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+        * { box-sizing: border-box; }
         body {
             background-color: #f0f2f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #1a1a1a;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
             max-width: 100vw;
             overflow-x: hidden;
         }
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        /* ===== LOGIN PAGE ===== */
+        .login-bg {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #a855f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
+        .login-container {
+            max-width: 420px;
+            width: 100%;
+            padding: 40px 32px;
+            background: rgba(255,255,255,0.97);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: fadeInUp 0.5s ease-out;
+        }
+        .login-hero { text-align: center; margin-bottom: 28px; }
+        .login-hero .hero-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+        .login-hero h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .login-hero p { color: #6b7280; font-size: 1rem; margin: 0; }
+        .login-input-wrap { position: relative; }
+        .login-input-wrap .login-icon {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af; font-size: 1.1rem; pointer-events: none;
+        }
+        .login-input-wrap input {
+            padding-left: 42px; height: 48px;
+            border-radius: var(--radius-sm);
+            border: 2px solid #e5e7eb;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .login-input-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+        }
+        .login-btn {
+            height: 48px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none; color: #fff;
+            font-weight: 600; font-size: 1.05rem;
+            letter-spacing: 0.3px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            cursor: pointer;
+        }
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79,70,229,0.35);
+            background: linear-gradient(135deg, var(--accent-light), var(--accent));
+        }
+        .login-btn:active { transform: translateY(0); }
+        .login-hint {
+            text-align: center; color: #9ca3af;
+            font-size: 0.82rem; margin-top: 16px; line-height: 1.4;
+        }
+        .login-container .g-recaptcha { display: flex; justify-content: center; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(40,167,69,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(40,167,69,0); }
+        }
+        @keyframes toastIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== MAIN LAYOUT ===== */
         .main-container {
             max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 10px;
+            margin: 24px auto;
+            padding: 0 12px;
             width: 100%;
+            animation: fadeIn 0.4s ease-out;
         }
+
+        /* ===== TOP BAR ===== */
         .top-bar {
             background: white;
-            padding: 20px 10px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
             margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
+        .top-bar h2 { font-weight: 800; color: var(--accent-dark); margin: 0; }
+
+        /* ===== TRIP SELECTION CARDS ===== */
         .trips-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px 0;
-            width: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px; padding: 20px 0; width: 100%;
         }
         .trip-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            width: 100%;
-            min-width: 0;
-            box-sizing: border-box;
+            background: white; border-radius: var(--radius);
+            padding: 0; box-shadow: var(--card-shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            width: 100%; min-width: 0; overflow: hidden;
+            animation: cardIn 0.4s ease-out backwards;
         }
+        .trip-card:nth-child(1) { animation-delay: 0.05s; }
+        .trip-card:nth-child(2) { animation-delay: 0.1s; }
+        .trip-card:nth-child(3) { animation-delay: 0.15s; }
+        .trip-card:nth-child(4) { animation-delay: 0.2s; }
+        .trip-card:nth-child(5) { animation-delay: 0.25s; }
+        .trip-card:nth-child(6) { animation-delay: 0.3s; }
         .trip-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            box-shadow: var(--card-hover-shadow);
         }
+        .trip-card-header {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white; padding: 18px 20px 14px;
+        }
+        .trip-card-header h3 { font-size: 1.15rem; font-weight: 700; margin: 0 0 4px; }
+        .trip-card-header .trip-dates {
+            font-size: 0.88rem; opacity: 0.9;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .trip-card-body { padding: 16px 20px 20px; }
+        .trip-card-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+        .trip-card-badges .badge {
+            font-weight: 500; font-size: 0.8rem; padding: 5px 10px; border-radius: 20px;
+        }
+        .trip-card-actions { display: flex; flex-direction: column; gap: 8px; }
+        .trip-card-actions .btn { border-radius: var(--radius-sm); font-weight: 600; font-size: 0.92rem; }
+        .copy-key-btn {
+            font-size: 0.82rem; color: var(--accent);
+            background: rgba(79,70,229,0.08);
+            border: 1px dashed rgba(79,70,229,0.3);
+            border-radius: 8px; padding: 6px 12px; cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+            width: 100%; justify-content: center;
+        }
+        .copy-key-btn:hover { background: rgba(79,70,229,0.14); border-color: var(--accent); }
+        .empty-trips {
+            text-align: center; padding: 60px 20px; color: #9ca3af;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .empty-trips .empty-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+        .empty-trips p { font-size: 1.1rem; margin: 0; }
+
+        /* ===== TRIP DETAIL TOP BAR ===== */
+        .trip-detail-header {
+            display: flex; flex-wrap: wrap; align-items: center;
+            gap: 12px; flex: 1; min-width: 0;
+        }
+        .trip-detail-title { flex: 1; min-width: 0; }
+        .trip-detail-title .trip-name {
+            font-size: 1.65rem; font-weight: 800;
+            color: var(--accent-dark); margin: 0; line-height: 1.2;
+        }
+        .trip-detail-title .trip-date-range {
+            font-size: 0.95rem; color: #6b7280; margin-top: 2px;
+        }
+        .trip-stats { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .trip-stat {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.88rem; color: #6b7280; white-space: nowrap;
+        }
+        .trip-stat .stat-icon { font-size: 1.1rem; }
+        .trip-stat .stat-value { font-weight: 700; color: #374151; }
+        .trip-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .trip-actions .btn {
+            border-radius: var(--radius-sm); font-weight: 600;
+            font-size: 0.9rem; padding: 8px 16px;
+        }
+        .back-button {
+            padding: 8px 16px; background: #f3f4f6; border: none;
+            border-radius: var(--radius-sm); color: #374151;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+        }
+        .back-button:hover { background: #e5e7eb; color: var(--accent); }
+        .btn-save { background: #28a745; color: white; border: none; }
+        .btn-save:hover { background: #218838; color: white; }
+        .btn-save:disabled { background: #8fcea0; color: white; opacity: 0.7; }
+        .btn-save.pulse { animation: pulse-glow 1.5s infinite; }
+        .edit-trip-btn {
+            background-color: rgba(255,193,7,0.15) !important;
+            color: #92690b !important;
+            border: 1px solid rgba(255,193,7,0.4) !important;
+            font-weight: 600;
+        }
+        .edit-trip-btn:hover { background-color: rgba(255,193,7,0.3) !important; }
+        .btn-export { background: var(--accent); color: white; border: none; }
+        .btn-export:hover { background: var(--accent-dark); color: white; }
+
+        /* ===== TRIP OVERVIEW SUMMARY ===== */
+        .trip-summary-strip {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-radius: var(--radius); padding: 16px 24px;
+            margin-bottom: 20px; display: flex; flex-wrap: wrap;
+            gap: 20px; align-items: center; justify-content: center;
+            color: white; animation: fadeIn 0.4s ease-out;
+        }
+        .summary-item { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        .summary-item .summary-icon { font-size: 1.3rem; }
+        .summary-item .summary-value { font-weight: 700; font-size: 1.15rem; }
+        .summary-item .summary-label { opacity: 0.9; }
+
+        /* ===== CALENDAR DAY CARDS ===== */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-            padding: 20px 0;
-            width: 100%;
-        }        .day-card {
-            border: 2px solid #e3e6ea;
-            border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            background: #fff;
-            margin-bottom: 24px;
-            padding: 18px 12px;
-            transition: box-shadow 0.2s;
-            min-width: 0;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-wrap: break-word;
+            gap: 20px; padding: 20px 0; width: 100%;
         }
-        .day-card:hover {
-            box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+        .day-card {
+            border: none; border-radius: var(--radius);
+            box-shadow: var(--card-shadow); background: #fff;
+            margin-bottom: 0; overflow: hidden;
+            transition: box-shadow 0.25s ease;
+            min-width: 0; width: 100%;
+            animation: cardIn 0.35s ease-out backwards;
         }
-        .day-card .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            word-break: break-word;
+        .day-card:hover { box-shadow: var(--card-hover-shadow); }
+        .day-card-header {
+            background: linear-gradient(135deg, #f8fafc, #eef2ff);
+            padding: 14px 18px; border-bottom: 1px solid #e5e7eb;
         }
-        .day-card .list-group-item {
-            border: none;
-            padding-left: 0;
-            padding-right: 0;
-            background: transparent;
+        .day-card-header .day-title {
+            font-size: 1.05rem; font-weight: 700;
+            color: var(--accent-dark); margin: 0;
         }
+        .day-card-header .day-subtitle { font-size: 0.8rem; color: #9ca3af; margin: 0; }
+        .day-card-body { padding: 12px 16px 16px; }
+
+        /* ===== EVENT ITEMS ===== */
         .event {
-            margin: 8px 0;
-            padding: 12px 8px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            word-break: break-word;
+            margin: 0; padding: 12px 14px;
+            border-radius: var(--radius-sm); font-size: 0.95rem;
+            display: flex; justify-content: space-between; align-items: center;
+            word-break: break-word; transition: background-color 0.15s;
+            min-height: 48px;
         }
-        .event .event-delete-btn {
-            margin-left: 10px;
-            font-size: 1.3em;
-            color: #dc3545 !important;
-            background: none;
-            border: none;
-            cursor: pointer;
-            line-height: 1;
+        .event + .event { margin-top: 8px; }
+        .event-content { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .event-emoji { font-size: 1.4rem; flex-shrink: 0; }
+        .event-details { flex: 1; min-width: 0; }
+        .event-name { font-weight: 600; color: #1f2937; line-height: 1.3; }
+        .event-time-badge {
+            display: inline-block; font-size: 0.78rem; font-weight: 600;
+            padding: 2px 8px; border-radius: 12px; margin-top: 2px;
         }
-        .event .event-delete-btn:focus {
-            outline: none;
+        .arrival .event-time-badge { background: rgba(40,167,69,0.15); color: #166534; }
+        .activity .event-time-badge { background: rgba(0,123,255,0.12); color: #1d4ed8; }
+        .departure .event-time-badge { background: rgba(220,53,69,0.12); color: #991b1b; }
+        .event-delete-btn {
+            min-width: 36px; min-height: 36px; width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(220,53,69,0.08); border: none; border-radius: 8px;
+            color: #dc3545; cursor: pointer; transition: all 0.2s;
+            flex-shrink: 0; margin-left: 8px; font-size: 1rem;
         }
-        .arrival { 
-            background-color: #d4edda; 
-            border-left: 4px solid #28a745;
+        .event-delete-btn:hover { background: rgba(220,53,69,0.18); color: #b91c1c; }
+        .event-delete-btn:focus { outline: none; }
+        .arrival { background-color: var(--arrival-bg); border-left: 4px solid var(--arrival-border); }
+        .activity { background-color: var(--activity-bg); border-left: 4px solid var(--activity-border); }
+        .departure { background-color: var(--departure-bg); border-left: 4px solid var(--departure-border); }
+        .no-events { text-align: center; padding: 24px 16px; color: #9ca3af; }
+        .no-events .no-events-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+        .no-events p { margin: 0; font-size: 0.92rem; }
+
+        /* Desktop: hide delete, show on hover */
+        @media (hover: hover) {
+            .event-delete-btn { opacity: 0; transition: opacity 0.2s, background 0.2s; }
+            .event:hover .event-delete-btn { opacity: 1; }
         }
-        .activity { 
-            background-color: #cce5ff; 
-            border-left: 4px solid #007bff;
-        }
-        .departure { 
-            background-color: #f8d7da; 
-            border-left: 4px solid #dc3545;
-        }
+
+        /* ===== ADD EVENT SECTION ===== */
         .add-event-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-top: 20px;
-            width: 100%;
-            box-sizing: border-box;
+            background: white; border-radius: var(--radius);
+            padding: 20px 24px; box-shadow: var(--card-shadow);
+            margin-top: 0; margin-bottom: 20px; width: 100%;
         }
-        .event-type-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+        .add-event-title {
+            font-weight: 700; color: var(--accent-dark);
+            margin-bottom: 14px; font-size: 1rem;
+            display: flex; align-items: center; gap: 8px;
         }
+        .event-type-buttons { display: flex; gap: 10px; margin-bottom: 0; flex-wrap: wrap; }
         .event-type-button {
-            flex: 1 1 100px;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: opacity 0.2s;
-            min-width: 0;
+            flex: 1 1 100px; padding: 12px 16px;
+            border: 2px solid transparent; border-radius: var(--radius-sm);
+            font-weight: 600; font-size: 0.95rem; transition: all 0.2s;
+            min-width: 0; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-        .event-type-button.arrival { background-color: #28a745; color: white; }
-        .event-type-button.activity { background-color: #007bff; color: white; }
-        .event-type-button.departure { background-color: #dc3545; color: white; }
-        .event-type-button:hover { opacity: 0.9; }
+        .event-type-button.arrival {
+            background-color: rgba(40,167,69,0.12); color: #166534;
+            border-color: rgba(40,167,69,0.3);
+        }
+        .event-type-button.arrival:hover, .event-type-button.arrival.active {
+            background-color: #28a745; color: white; border-color: #28a745;
+        }
+        .event-type-button.activity {
+            background-color: rgba(0,123,255,0.1); color: #1d4ed8;
+            border-color: rgba(0,123,255,0.3);
+        }
+        .event-type-button.activity:hover, .event-type-button.activity.active {
+            background-color: #007bff; color: white; border-color: #007bff;
+        }
+        .event-type-button.departure {
+            background-color: rgba(220,53,69,0.1); color: #991b1b;
+            border-color: rgba(220,53,69,0.3);
+        }
+        .event-type-button.departure:hover, .event-type-button.departure.active {
+            background-color: #dc3545; color: white; border-color: #dc3545;
+        }
         .event-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: flex-start;
-            width: 100%;
+            display: none; flex-direction: column; gap: 14px;
+            align-items: flex-start; width: 100%; margin-top: 16px;
+            overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease;
         }
+        .event-form.open { display: grid; }
         .event-form .input-group {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            max-width: 100%;
-            flex-wrap: nowrap;
+            display: flex; align-items: center;
+            width: 100%; max-width: 100%; flex-wrap: nowrap;
         }
         .event-form .input-group input.form-control {
-            flex: 1 1 auto;
-            min-width: 0;
-            width: 100%;
-            border-radius: 8px 0 0 8px;
+            flex: 1 1 auto; min-width: 0; width: 100%;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            border: 2px solid #e5e7eb; height: 44px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .event-form .input-group input.form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
         .event-form .input-group-text {
-            border-radius: 0 8px 8px 0;
-            background: #e7f3ff;
-            border: 2px solid #b3d0ff;
-            border-left: none;
-            color: #339af0;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            height: 38px;
-            margin-left: -2px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            background: #eef2ff; border: 2px solid #e5e7eb;
+            border-left: none; color: var(--accent); font-size: 1.1rem;
+            display: flex; align-items: center; height: 44px; margin-left: -2px;
         }
-        .event-form .input-group input.form-control::placeholder {
-            color: #8bb3d9;
-            opacity: 1;
-        }
-        .event-form .input-group {
-            margin-bottom: 0;
-        }
-        .event-form .event-times-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            flex-wrap: wrap;
-        }
-        .event-form .event-times-row .input-group {
-            width: 100%;
-            max-width: 100%;
-        }
+        .event-form .input-group input.form-control::placeholder { color: #9ca3af; opacity: 1; }
+        .event-form .event-times-row { display: flex; gap: 10px; width: 100%; flex-wrap: wrap; }
+        .event-form .event-times-row .input-group { width: 100%; max-width: 100%; }
         .event-form .event-times-row .activity-only {
-            width: 100%;
-            max-width: 100%;
-            display: flex !important;
-            align-items: center;
+            width: 100%; max-width: 100%; display: flex !important; align-items: center;
         }
-        .event-form .input-group input.form-control {
-            min-width: 0;
-            width: 100%;
-        }
-        .event-form .full-width {
-            width: 100%;
-        }
+        .event-form .full-width { width: 100%; }
         .event-form .form-label {
-            font-weight: 500;
-            color: #339af0;
-            margin-bottom: 2px;
+            font-weight: 600; color: var(--accent-dark);
+            margin-bottom: 2px; font-size: 0.88rem;
+            display: flex; align-items: center; gap: 6px;
         }
-        .saving {
-            opacity: 0.7;
-            pointer-events: none;
+        .event-form input.form-control.full-width {
+            border-radius: var(--radius-sm); border: 2px solid #e5e7eb;
+            height: 44px; transition: border-color 0.2s, box-shadow 0.2s;
         }
+        .event-form input.form-control.full-width:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+        .btn-add-event {
+            height: 46px; border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none; color: white; font-weight: 600; font-size: 0.95rem;
+            transition: transform 0.15s, box-shadow 0.15s; cursor: pointer;
+        }
+        .btn-add-event:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(79,70,229,0.3); color: white;
+        }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast-notification {
+            pointer-events: auto; padding: 14px 20px;
+            border-radius: var(--radius-sm); color: white;
+            font-weight: 500; font-size: 0.92rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex; align-items: center; gap: 10px;
+            min-width: 280px; max-width: 420px;
+            animation: toastIn 0.3s ease-out;
+        }
+        .toast-notification.removing { animation: toastOut 0.3s ease-in forwards; }
+        .toast-notification.toast-success { background: linear-gradient(135deg, #059669, #10b981); }
+        .toast-notification.toast-error { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .toast-notification.toast-warning { background: linear-gradient(135deg, #d97706, #f59e0b); }
+        .toast-notification.toast-info { background: linear-gradient(135deg, var(--accent), var(--accent-light)); }
+        .toast-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+        /* ===== SPINNER ===== */
+        .saving { opacity: 0.7; pointer-events: none; }
         .spinner-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(255, 255, 255, 0.9);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(255,255,255,0.9);
+            justify-content: center; align-items: center; z-index: 10000;
         }
-        .spinner-overlay.show {
-            display: flex;
+        .spinner-overlay.show { display: flex; }
+
+        /* ===== MODALS ===== */
+        .modal-content {
+            border-radius: var(--radius); border: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
-        .back-button {
-            padding: 8px 16px;
-            background: #f8f9fa;
-            border: none;
-            border-radius: 6px;
-            color: #1a1a1a;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
-            max-width: 200px;
+        .modal-header { border-bottom: 1px solid #f3f4f6; padding: 20px 24px; }
+        .modal-header .modal-title { font-weight: 700; color: var(--accent-dark); }
+        .modal-body { padding: 24px; }
+        .modal-body .form-control {
+            height: 44px; border-radius: var(--radius-sm);
+            border: 2px solid #e5e7eb; transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .back-button:hover {
-            background: #e9ecef;
+        .modal-body .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
-        .edit-trip-btn {
-            background-color: rgba(255, 193, 7, 0.5) !important;
-            color: #856404 !important;
-            border: none;
-        }
-        .edit-trip-btn:hover {
-            background-color: rgba(255, 193, 7, 0.7) !important;
-        }
+        .modal-footer { border-top: 1px solid #f3f4f6; padding: 16px 24px; }
+        .modal-footer .btn { border-radius: var(--radius-sm); font-weight: 600; }
         .btn-info {
-            background-color: #17a2b8 !important;
-            border-color: #17a2b8 !important;
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
             color: white !important;
         }
         .btn-info:hover {
-            background-color: #138496 !important;
-            border-color: #117a8b !important;
-            color: white !important;
+            background-color: var(--accent-dark) !important;
+            border-color: var(--accent-dark) !important;
         }
 
-        /* Responsive styles */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
-            .main-container {
-                max-width: 100vw;
-                padding: 0 4px;
-            }
-            .calendar-grid, .trips-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                padding: 10px 0;
-            }
-            .day-card, .trip-card {
-                padding: 14px 6px;
-                margin-bottom: 16px;
-            }
-            .top-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-                padding: 12px 4px;
-            }
+            .main-container { max-width: 100vw; padding: 0 6px; }
+            .calendar-grid, .trips-grid { grid-template-columns: 1fr; gap: 14px; padding: 10px 0; }
+            .top-bar { padding: 16px 14px; }
+            .trip-detail-header { flex-direction: column; align-items: flex-start; }
+            .trip-actions { width: 100%; justify-content: stretch; }
+            .trip-actions .btn { flex: 1; min-width: 0; }
+            .trip-stats { width: 100%; justify-content: flex-start; }
+            .trip-summary-strip { padding: 14px 16px; gap: 12px; }
         }
         @media (max-width: 600px) {
-            .main-container {
-                max-width: 100vw;
-                padding: 0 2px;
-            }
-            .calendar-grid, .trips-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-                padding: 6px 0;
-            }
-            .day-card, .trip-card {
-                padding: 10px 2px;
-                margin-bottom: 10px;
-                font-size: 0.97em;
-            }
-            .top-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-                padding: 8px 2px;
-            }
-            .event {
-                font-size: 0.92rem;
-                padding: 8px 4px;
-            }
-            .event-type-buttons {
-                flex-direction: column;
-                gap: 6px;
-            }
-            .event-form .event-times-row {
-                flex-direction: column;
-                gap: 6px;
-            }
-            .back-button {
-                width: 100%;
-                max-width: 100%;
-            }
-
-            /* Responsive styles for trip action buttons */
-            .top-bar .d-flex {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-                justify-content: center;
-            }
-
-            .top-bar .d-flex .btn {
-                flex: 1 1 auto;
-                min-width: 120px;
-            }
+            .main-container { padding: 0 4px; }
+            .calendar-grid, .trips-grid { gap: 10px; }
+            .top-bar { padding: 12px 10px; gap: 10px; }
+            .event { font-size: 0.92rem; padding: 10px 12px; min-height: 52px; }
+            .event-type-buttons { flex-direction: column; gap: 8px; }
+            .event-form .event-times-row { flex-direction: column; gap: 8px; }
+            .back-button { width: 100%; }
+            .trip-actions { flex-direction: column; width: 100%; }
+            .trip-actions .btn { width: 100%; }
+            .add-event-container { padding: 16px 14px; }
+            .trip-detail-title .trip-name { font-size: 1.35rem; }
+            .day-card-body { padding: 10px 12px 14px; }
+            .event-delete-btn { min-width: 44px; min-height: 44px; width: 44px; height: 44px; }
+            .toast-container { bottom: 10px; right: 10px; left: 10px; }
+            .toast-notification { min-width: unset; width: 100%; }
+            .login-container { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
     <!-- Loading Spinner -->
     <div id="spinner" class="spinner-overlay">
-        <div class="spinner-border text-primary" role="status">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
-    <!-- Login Screen -->    <div id="loginScreen" class="login-container">
-        <h2 class="text-center mb-4">Travel Planner Login</h2>
-        <form id="loginForm" name="login" autocomplete="off">
-            <div class="form-group mb-3">
-                <input type="password" class="form-control" id="keyInput" placeholder="Enter access key" required>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-bg">
+        <div class="login-container">
+            <div class="login-hero">
+                <span class="hero-icon">✈️</span>
+                <h1>Trip Planner</h1>
+                <p>Plan your perfect trip together</p>
             </div>
-            <div class="mb-3">
-                <div class="g-recaptcha" data-sitekey="6LcDwWkrAAAAAF-ilnD_q16FjdzHuTy_jeZhSWhy"></div>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
+            <form id="loginForm" name="login" autocomplete="off">
+                <div class="form-group mb-3">
+                    <div class="login-input-wrap">
+                        <i class="bi bi-key login-icon"></i>
+                        <input type="password" class="form-control" id="keyInput" placeholder="Enter your access key" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="g-recaptcha" data-sitekey="6LcDwWkrAAAAAF-ilnD_q16FjdzHuTy_jeZhSWhy"></div>
+                </div>
+                <button type="submit" class="login-btn w-100">Log In</button>
+            </form>
+            <p class="login-hint">Enter your access key to view a trip, or master key to manage all trips.</p>
+        </div>
     </div>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    
+
     <!-- Main Content -->
     <div id="mainContent" class="main-container" style="display: none;">
         <!-- Trip Selection View (Master only) -->
         <div id="tripSelection">
             <div class="top-bar">
-                <h2>Your Trips</h2>
-                <div>
-                    <button class="btn btn-primary" onclick="showNewTripForm()">New Trip</button>
-                    <button class="btn btn-outline-secondary ms-2" onclick="logout()">Logout</button>
+                <h2>✈️ Your Trips</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" style="border-radius:var(--radius-sm);font-weight:600;" onclick="showNewTripForm()"><i class="bi bi-plus-lg"></i> New Trip</button>
+                    <button class="btn btn-outline-secondary" style="border-radius:var(--radius-sm);font-weight:600;" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
                 </div>
             </div>
             <div id="tripsList" class="trips-grid"></div>
         </div>
 
         <!-- Trip Detail View -->
-        <div id="tripContent" style="display: none;">            <div class="top-bar">
-                <div class="d-flex align-items-center gap-3">
-                    <button id="backToTripsBtn" class="back-button">← Back to Trips</button>
-                    <h2 id="tripTitle">Trip Details</h2>
-                    <button id="editTripDatesBtn" class="btn btn-warning ms-3 edit-trip-btn" style="display:none;" onclick="showEditTripModal()">Edit Trip Info</button>
-                    <button id="exportTripBtn" class="btn btn-info ms-3" onclick="exportCurrentTripToPDF()">
-                        <i class="bi bi-download"></i> Export PDF
-                    </button>
-                    <button id="saveTripBtn" class="btn btn-success ms-3" disabled>Save</button>
+        <div id="tripContent" style="display: none;">
+            <div class="top-bar">
+                <div class="trip-detail-header">
+                    <button id="backToTripsBtn" class="back-button"><i class="bi bi-arrow-left"></i> Back to Trips</button>
+                    <div class="trip-detail-title">
+                        <h2 id="tripTitle" class="trip-name">Trip Details</h2>
+                        <div id="tripDateRange" class="trip-date-range"></div>
+                    </div>
+                    <div id="tripStats" class="trip-stats"></div>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-secondary" onclick="logout()">Logout</button>
+                <div class="trip-actions">
+                    <button id="editTripDatesBtn" class="btn edit-trip-btn" style="display:none;" onclick="showEditTripModal()"><i class="bi bi-pencil"></i> Edit</button>
+                    <button id="exportTripBtn" class="btn btn-export" onclick="exportCurrentTripToPDF()"><i class="bi bi-download"></i> PDF</button>
+                    <button id="saveTripBtn" class="btn btn-save" disabled><i class="bi bi-check-lg"></i> Save</button>
+                    <button class="btn btn-outline-secondary" style="border-radius:var(--radius-sm);font-weight:600;" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
                 </div>
             </div>
 
+            <!-- Trip Summary Strip -->
+            <div id="tripSummaryStrip" class="trip-summary-strip" style="display:none;"></div>
+
             <!-- Add Event Section -->
             <div class="add-event-container">
-                <div class="event-type-buttons">
-                    <button class="event-type-button arrival" onclick="showEventForm('arrival')">Add Arrival</button>
-                    <button class="event-type-button activity" onclick="showEventForm('activity')">Add Activity</button>
-                    <button class="event-type-button departure" onclick="showEventForm('departure')">Add Departure</button>
+                <div class="add-event-title"><i class="bi bi-calendar-plus"></i> Add Event</div>
+                <div class="event-type-buttons" id="eventTypeButtons">
+                    <button class="event-type-button arrival" onclick="showEventForm('arrival')"><span>🛬</span> Arrival</button>
+                    <button class="event-type-button activity" onclick="showEventForm('activity')"><span>📅</span> Activity</button>
+                    <button class="event-type-button departure" onclick="showEventForm('departure')"><span>🛫</span> Departure</button>
                 </div>
 
                 <!-- Unified Event Form -->
                 <form id="eventForm" class="event-form" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <label for="eventDate" class="form-label mb-0">Date</label>
-                        <button type="button" id="collapseEventFormBtn" class="btn btn-link p-0 text-secondary" title="Collapse" style="font-size:1.5em;line-height:1;">
+                        <label for="eventDate" class="form-label mb-0"><i class="bi bi-calendar3"></i> Date</label>
+                        <button type="button" id="collapseEventFormBtn" class="btn btn-link p-0 text-secondary" title="Collapse" style="font-size:1.3em;line-height:1;">
                             <i class="bi bi-chevron-up"></i>
                         </button>
                     </div>
@@ -425,7 +622,7 @@
                         <input type="text" class="form-control" id="eventDate" placeholder="Date" required>
                         <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                     </div>
-                    <label class="form-label" id="eventTimeHeader">Time</label>
+                    <label class="form-label" id="eventTimeHeader"><i class="bi bi-clock"></i> Time</label>
                     <div class="event-times-row">
                         <div class="input-group">
                             <input type="text" class="form-control" id="eventTime" placeholder="Start Time" required>
@@ -436,9 +633,9 @@
                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
                         </div>
                     </div>
-                    <label for="eventName" class="form-label">Name/Description</label>
+                    <label for="eventName" class="form-label"><i class="bi bi-pencil-square"></i> Name/Description</label>
                     <input type="text" class="form-control full-width" id="eventName" placeholder="Name/Description" required>
-                    <button type="submit" class="btn btn-primary full-width" id="addEventButton">Add Event</button>
+                    <button type="submit" class="btn btn-add-event full-width" id="addEventButton">Add Event</button>
                 </form>
             </div>
 
@@ -451,21 +648,26 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Create New Trip</h5>
+                        <h5 class="modal-title"><i class="bi bi-airplane"></i> Create New Trip</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="newTripForm">                            <div class="mb-3">
-                                <input type="text" class="form-control" id="tripName" placeholder="Trip Name" required>
+                        <form id="newTripForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">Trip Name</label>
+                                <input type="text" class="form-control" id="tripName" placeholder="e.g. Summer Vacation" required>
                             </div>
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="tripKey" placeholder="Access Key" required>
+                                <label class="form-label fw-bold text-muted small">Access Key</label>
+                                <input type="text" class="form-control" id="tripKey" placeholder="Key guests will use to login" required>
                             </div>
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="tripStartDate" placeholder="Start Date" required>
+                                <label class="form-label fw-bold text-muted small">Start Date</label>
+                                <input type="text" class="form-control" id="tripStartDate" placeholder="YYYY-MM-DD" required>
                             </div>
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="tripEndDate" placeholder="End Date" required>
+                                <label class="form-label fw-bold text-muted small">End Date</label>
+                                <input type="text" class="form-control" id="tripEndDate" placeholder="YYYY-MM-DD" required>
                             </div>
                         </form>
                     </div>
@@ -482,21 +684,25 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Trip Dates</h5>
+                        <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit Trip</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <form id="editTripForm">
                             <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">Trip Name</label>
                                 <input type="text" class="form-control" id="editTripName" placeholder="Trip Name" required>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">Access Key</label>
                                 <input type="text" class="form-control" id="editTripKey" placeholder="Access Key" required>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">Start Date</label>
                                 <input type="text" class="form-control" id="editTripStartDate" placeholder="Start Date" required>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold text-muted small">End Date</label>
                                 <input type="text" class="form-control" id="editTripEndDate" placeholder="End Date" required>
                             </div>
                         </form>
@@ -518,43 +724,60 @@
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="exportdata.js"></script>
     <script>
+        function parseTimeToMs(t) {
+            if (!t) return 0;
+            const d = new Date('1970-01-01T' + t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, function(m, h, min, ampm) {
+                let hour = parseInt(h, 10);
+                if (ampm === 'PM' && hour !== 12) hour += 12;
+                if (ampm === 'AM' && hour === 12) hour = 0;
+                return hour.toString().padStart(2, '0') + ':' + min;
+            }) + ':00');
+            return d.getTime();
+        }
+
+        var MS_PER_DAY = 86400000; // 1000 * 60 * 60 * 24
         let tripData = null;
         let currentTrip = null;
         let isMaster = false;
         let isLoading = false;
         let unsavedChanges = false;
         let lastSavedTripData = null;
-        let saveAuthorized = false; // Flag to track when saves are explicitly authorized
+        let saveAuthorized = false;
+
+        // ===== TOAST NOTIFICATION SYSTEM =====
+        function showToast(message, type, duration) {
+            type = type || 'info';
+            duration = duration || 3500;
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const icons = {
+                success: '<i class="bi bi-check-circle-fill toast-icon"></i>',
+                error: '<i class="bi bi-exclamation-circle-fill toast-icon"></i>',
+                warning: '<i class="bi bi-exclamation-triangle-fill toast-icon"></i>',
+                info: '<i class="bi bi-info-circle-fill toast-icon"></i>'
+            };
+            toast.className = 'toast-notification toast-' + type;
+            toast.innerHTML = (icons[type] || icons.info) + '<span>' + message + '</span>';
+            container.appendChild(toast);
+            setTimeout(function() {
+                toast.classList.add('removing');
+                toast.addEventListener('animationend', function() { toast.remove(); });
+            }, duration);
+        }
 
         // Initialize date pickers
         function initializeDatePickers() {
-            // Trip date pickers
-            flatpickr("#tripStartDate", { 
-                dateFormat: "Y-m-d",
-                allowInput: true
-            });
-            flatpickr("#tripEndDate", { 
-                dateFormat: "Y-m-d",
-                allowInput: true
-            });
-
-            // Event date picker with trip date limits
-            const eventDatePicker = flatpickr("#eventDate", {
-                dateFormat: "Y-m-d",
-                allowInput: true,
+            flatpickr("#tripStartDate", { dateFormat: "Y-m-d", allowInput: true });
+            flatpickr("#tripEndDate", { dateFormat: "Y-m-d", allowInput: true });
+            flatpickr("#eventDate", {
+                dateFormat: "Y-m-d", allowInput: true,
                 minDate: currentTrip ? currentTrip.startDate : null,
                 maxDate: currentTrip ? currentTrip.endDate : null
             });
-
-            // Time pickers with 12h format for consistency
             const timeConfig = {
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: "h:i K",
-                allowInput: true,
-                time_24hr: false,
+                enableTime: true, noCalendar: true,
+                dateFormat: "h:i K", allowInput: true, time_24hr: false
             };
-
             flatpickr("#eventTime", timeConfig);
             flatpickr("#eventEndTime", timeConfig);
         }
@@ -566,82 +789,37 @@
                 if (!response.ok) throw new Error('Failed to load data');
                 tripData = await response.json();
             } catch (error) {
-                console.error('Error loading data:', error);
-                alert('Error loading data. Please try again later.');
+                showToast('Error loading data. Please try again later.', 'error');
             }
         }
 
         // Save data using Netlify function
         async function saveData() {
             if (isLoading) return;
-            
-            // EMERGENCY DEBUGGING - Find out what's calling this
-            console.log('🚨🚨🚨 SAVEDATA CALLED - INVESTIGATING...');
-            console.trace('Full call stack for saveData():');
-            
-            // Check if this is being called from the Save button
-            const saveButton = document.getElementById('saveTripBtn');
-            if (saveButton) {
-                console.log('Save button exists, disabled state:', saveButton.disabled);
-                console.log('Save button text:', saveButton.textContent);
-            }
-            
-            // Check unsaved changes state
-            console.log('Unsaved changes flag:', unsavedChanges);
-            console.log('Current trip:', currentTrip?.name || 'None');
-            console.log('Is master:', isMaster);
-            console.log('Save authorized flag:', saveAuthorized);
-            
-            // BLOCK ALL SAVES EXCEPT EXPLICIT USER ACTIONS
-            if (!saveAuthorized) {
-                console.log('🛑 BLOCKING UNAUTHORIZED SAVE ATTEMPT!');
-                console.log('This save was not explicitly authorized by user action');
-                console.log('saveAuthorized flag is:', saveAuthorized);
-                return; // Block the save
-            }
-            
-            // Reset the authorization flag for next time
+            if (!saveAuthorized) return;
             saveAuthorized = false;
-            
-            console.log('✅ Authorized save proceeding...');
             setLoading(true);
-            
             try {
-                console.log('Sending data to server:', JSON.stringify(tripData));
                 const response = await fetch('/.netlify/functions/updateData', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: tripData })
                 });
-
-                console.log('Server response status:', response.status);
-                
                 if (!response.ok) {
-                    // More detailed error based on HTTP status
                     if (response.status === 502) {
-                        throw new Error('Server error (502): The Netlify function is not responding correctly. This may be due to misconfiguration or deployment issues.');
+                        throw new Error('Server error (502): The Netlify function is not responding correctly.');
                     } else {
-                        throw new Error(`Server error (${response.status}): Failed to save data`);
+                        throw new Error('Server error (' + response.status + '): Failed to save data');
                     }
                 }
-
                 const result = await response.json();
-                console.log('Server response data:', result);
-                
-                if (result.error) {
-                    throw new Error(result.error);
-                }
-
-                // Reload data to get the latest version
+                if (result.error) throw new Error(result.error);
                 await loadData();
-                lastSavedTripData = deepClone(tripData); // Update saved state
-                setUnsavedChanges(false); // Clear unsaved flag after successful save
+                lastSavedTripData = deepClone(tripData);
+                setUnsavedChanges(false);
+                showToast('Changes saved successfully!', 'success');
             } catch (error) {
-                console.error('Error saving data:', error);
-                // More informative error message for users
-                alert('Error saving data: ' + error.message + '\n\nYour changes were not saved. Please try again later or contact support if this persists.');
+                showToast('Error saving: ' + error.message, 'error', 5000);
             } finally {
                 setLoading(false);
             }
@@ -650,11 +828,8 @@
         // Set loading state
         function setLoading(loading) {
             isLoading = loading;
-            const spinner = document.getElementById('spinner');
-            spinner.classList.toggle('show', loading);
-            
-            const buttons = document.querySelectorAll('button[type="submit"], button[onclick="createNewTrip()"]');
-            buttons.forEach(button => {
+            document.getElementById('spinner').classList.toggle('show', loading);
+            document.querySelectorAll('button[type="submit"], button[onclick="createNewTrip()"]').forEach(function(button) {
                 button.disabled = loading;
                 const originalText = button.getAttribute('data-original-text');
                 if (loading && originalText) {
@@ -663,37 +838,34 @@
                     button.innerHTML = originalText;
                 }
             });
-            
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
+            document.querySelectorAll('form').forEach(function(form) {
                 form.classList.toggle('saving', loading);
             });
-        }        // Show/hide Edit Trip Dates button based on isMaster
+        }
+
         function updateEditTripBtnVisibility() {
             const btn = document.getElementById('editTripDatesBtn');
             if (btn) btn.style.display = isMaster ? 'inline-block' : 'none';
         }
 
-        // Helper: Deep clone
-        function deepClone(obj) {
-            return JSON.parse(JSON.stringify(obj));
-        }
+        function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
-        // Mark unsaved changes
         function setUnsavedChanges(state) {
             unsavedChanges = state;
             const saveBtn = document.getElementById('saveTripBtn');
-            if (saveBtn) saveBtn.disabled = !unsavedChanges;
+            if (saveBtn) {
+                saveBtn.disabled = !unsavedChanges;
+                if (unsavedChanges) { saveBtn.classList.add('pulse'); }
+                else { saveBtn.classList.remove('pulse'); }
+            }
         }
 
-        // Compare currentTrip to lastSavedTripData
         function detectUnsavedChanges() {
             if (!currentTrip || !lastSavedTripData) return false;
-            const savedTrip = lastSavedTripData.trips.find(t => t.id === currentTrip.id);
+            const savedTrip = lastSavedTripData.trips.find(function(t) { return t.id === currentTrip.id; });
             return JSON.stringify(currentTrip) !== JSON.stringify(savedTrip);
         }
 
-        // Add Save button to trip detail view
         function ensureSaveButton() {
             const saveBtn = document.getElementById('saveTripBtn');
             if (saveBtn) {
@@ -706,29 +878,17 @@
             }
         }
 
-        // Call this whenever trip detail view is shown
         function setupTripDetailUnsavedLogic() {
-            ensureSaveButton(); // Always ensure Save button for all users
+            ensureSaveButton();
             setUnsavedChanges(false);
-            // Warn on navigation if unsaved changes
             window.onbeforeunload = function(e) {
-                if (unsavedChanges) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                    return '';
-                }
+                if (unsavedChanges) { e.preventDefault(); e.returnValue = ''; return ''; }
             };
         }
 
-        // Mark unsaved changes on any trip edit
-        function markTripEdit() {
-            console.log('📝 markTripEdit() called - marking changes as unsaved');
-            console.trace('Call stack for markTripEdit():');
-            setUnsavedChanges(true);
-        }
+        function markTripEdit() { setUnsavedChanges(true); }
 
-        // Patch add/edit functions to mark unsaved changes
-        // Example for addArrival, addActivity, addDeparture
+        // Add event functions
         async function addArrival(event, data) {
             if (event) event.preventDefault();
             const arrival = data || {
@@ -739,7 +899,10 @@
             currentTrip.arrivals.push(arrival);
             markTripEdit();
             updateCalendar();
+            updateTripSummary();
             document.getElementById('eventForm').style.display = 'none';
+            resetEventTypeButtons();
+            showToast('Arrival added: ' + arrival.name, 'success');
         }
         async function addActivity(event, data) {
             if (event) event.preventDefault();
@@ -752,7 +915,10 @@
             currentTrip.activities.push(activity);
             markTripEdit();
             updateCalendar();
+            updateTripSummary();
             document.getElementById('eventForm').style.display = 'none';
+            resetEventTypeButtons();
+            showToast('Activity added: ' + activity.name, 'success');
         }
         async function addDeparture(event, data) {
             if (event) event.preventDefault();
@@ -764,123 +930,139 @@
             currentTrip.departures.push(departure);
             markTripEdit();
             updateCalendar();
+            updateTripSummary();
             document.getElementById('eventForm').style.display = 'none';
+            resetEventTypeButtons();
+            showToast('Departure added: ' + departure.name, 'success');
         }
 
-        // Delete an event (arrival, activity, departure) by type, date, and index
+        function resetEventTypeButtons() {
+            document.querySelectorAll('.event-type-button').forEach(function(btn) { btn.classList.remove('active'); });
+        }
+
         function deleteEvent(type, dateStr, idx) {
-            if (!currentTrip || !['arrivals','activities','departures'].includes(type)) return;
-            // Find the correct event array filtered by date
-            let arr = currentTrip[type];
-            // Find all events for this date
-            const eventsForDate = arr.map((e, i) => ({...e, _idx: i})).filter(e => e.date === dateStr);
+            if (!currentTrip || ['arrivals','activities','departures'].indexOf(type) === -1) return;
+            const arr = currentTrip[type];
+            const eventsForDate = arr.map(function(e, i) { return Object.assign({}, e, {_idx: i}); }).filter(function(e) { return e.date === dateStr; });
             if (idx >= 0 && idx < eventsForDate.length) {
-                // Remove from the main array by original index
                 arr.splice(eventsForDate[idx]._idx, 1);
                 markTripEdit();
                 updateCalendar();
+                updateTripSummary();
             }
         }
-        // Delete an event (arrival, activity, departure) by type, date, and sorted index
+
         function deleteEventSorted(type, dateStr, sortedIdx) {
-            if (!currentTrip || !['arrivals','activities','departures'].includes(type)) return;
-            let arr = currentTrip[type];
-            // Sort the array for this date the same way as in updateCalendar
+            if (!currentTrip || ['arrivals','activities','departures'].indexOf(type) === -1) return;
+            if (!confirm('Delete this event?')) return;
+            const arr = currentTrip[type];
             let sorted;
-            const parseTime = t => {
-                if (!t) return 0;
-                const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
-                    let hour = parseInt(h);
-                    if (ampm === 'PM' && hour !== 12) hour += 12;
-                    if (ampm === 'AM' && hour === 12) hour = 0;
-                    return hour.toString().padStart(2, '0') + ':' + min;
-                })}:00`);
-                return d.getTime();
-            };
             if (type === 'arrivals' || type === 'departures') {
-                sorted = arr
-                    .map((e, i) => ({...e, _idx: i}))
-                    .filter(e => e.date === dateStr)
-                    .sort((a, b) => parseTime(a.time) - parseTime(b.time));
+                sorted = arr.map(function(e, i) { return Object.assign({}, e, {_idx: i}); })
+                    .filter(function(e) { return e.date === dateStr; })
+                    .sort(function(a, b) { return parseTimeToMs(a.time) - parseTimeToMs(b.time); });
             } else if (type === 'activities') {
-                sorted = arr
-                    .map((e, i) => ({...e, _idx: i}))
-                    .filter(e => e.date === dateStr)
-                    .sort((a, b) => {
-                        const aStart = parseTime(a.startTime);
-                        const bStart = parseTime(b.startTime);
-                        if (aStart !== bStart) return aStart - bStart;
-                        const aEnd = parseTime(a.endTime);
-                        const bEnd = parseTime(b.endTime);
-                        return aEnd - bEnd;
+                sorted = arr.map(function(e, i) { return Object.assign({}, e, {_idx: i}); })
+                    .filter(function(e) { return e.date === dateStr; })
+                    .sort(function(a, b) {
+                        const aS = parseTimeToMs(a.startTime), bS = parseTimeToMs(b.startTime);
+                        if (aS !== bS) return aS - bS;
+                        return parseTimeToMs(a.endTime) - parseTimeToMs(b.endTime);
                     });
             }
             if (sortedIdx >= 0 && sortedIdx < sorted.length) {
+                const evName = sorted[sortedIdx].name;
                 arr.splice(sorted[sortedIdx]._idx, 1);
                 markTripEdit();
                 updateCalendar();
+                updateTripSummary();
+                showToast('"' + evName + '" removed', 'info');
             }
         }
 
-        // When trip detail view is shown (existing or new trip)
+        function copyAccessKey(key, evt) {
+            if (evt) evt.stopPropagation();
+            navigator.clipboard.writeText(key).then(function() {
+                showToast('Access key copied to clipboard!', 'success');
+            }).catch(function() {
+                showToast('Failed to copy key', 'error');
+            });
+        }
+
+        function updateTripSummary() {
+            if (!currentTrip) return;
+            const strip = document.getElementById('tripSummaryStrip');
+            if (!strip) return;
+            const uniquePeople = new Set();
+            currentTrip.arrivals.forEach(function(a) { uniquePeople.add(a.name.trim().toLowerCase()); });
+            currentTrip.departures.forEach(function(d) { uniquePeople.add(d.name.trim().toLowerCase()); });
+            const start = new Date(currentTrip.startDate + 'T00:00:00');
+            const end = new Date(currentTrip.endDate + 'T00:00:00');
+            const days = Math.max(1, Math.round((end - start) / MS_PER_DAY) + 1);
+            const ac = currentTrip.activities.length;
+            const total = currentTrip.arrivals.length + ac + currentTrip.departures.length;
+            strip.style.display = 'flex';
+            strip.innerHTML =
+                '<div class="summary-item"><span class="summary-icon">👥</span><span class="summary-value">' + uniquePeople.size + '</span><span class="summary-label">' + (uniquePeople.size === 1 ? 'Traveler' : 'Travelers') + '</span></div>' +
+                '<div class="summary-item"><span class="summary-icon">📅</span><span class="summary-value">' + ac + '</span><span class="summary-label">' + (ac === 1 ? 'Activity' : 'Activities') + '</span></div>' +
+                '<div class="summary-item"><span class="summary-icon">📆</span><span class="summary-value">' + days + '</span><span class="summary-label">' + (days === 1 ? 'Day' : 'Days') + ' of adventure!</span></div>' +
+                '<div class="summary-item"><span class="summary-icon">✨</span><span class="summary-value">' + total + '</span><span class="summary-label">Total Events</span></div>';
+            const statsEl = document.getElementById('tripStats');
+            if (statsEl) {
+                statsEl.innerHTML =
+                    '<div class="trip-stat"><span class="stat-icon">👥</span> <span class="stat-value">' + uniquePeople.size + '</span> people</div>' +
+                    '<div class="trip-stat"><span class="stat-icon">📅</span> <span class="stat-value">' + ac + '</span> activities</div>' +
+                    '<div class="trip-stat"><span class="stat-icon">📆</span> <span class="stat-value">' + days + '</span> days</div>';
+            }
+        }
+
         function showTripContent() {
             document.getElementById('tripSelection').style.display = 'none';
             document.getElementById('tripContent').style.display = 'block';
-            setupTripDetailUnsavedLogic(); // Always call this for both user types
+            setupTripDetailUnsavedLogic();
             updateTripTitleWithDates();
             updateEditTripBtnVisibility();
             updateCalendar();
+            updateTripSummary();
         }
 
-        // When creating a new trip, show trip detail view and track unsaved changes
         async function createNewTrip() {
-            const tripName = document.getElementById('tripName').value.trim();
-            const tripKey = document.getElementById('tripKey').value.trim();
-            const tripStartDate = document.getElementById('tripStartDate').value.trim();
-            const tripEndDate = document.getElementById('tripEndDate').value.trim();
-            if (!tripName || !tripKey || !tripStartDate || !tripEndDate || isNaN(Date.parse(tripStartDate)) || isNaN(Date.parse(tripEndDate))) {
-                alert('Please enter a valid trip name, key, start date, and end date.');
+            const tn = document.getElementById('tripName').value.trim();
+            const tk = document.getElementById('tripKey').value.trim();
+            const ts = document.getElementById('tripStartDate').value.trim();
+            const te = document.getElementById('tripEndDate').value.trim();
+            if (!tn || !tk || !ts || !te || isNaN(Date.parse(ts)) || isNaN(Date.parse(te))) {
+                showToast('Please enter a valid trip name, key, start date, and end date.', 'warning');
                 return;
             }
-            const timestamp = new Date().getTime();
             const newTrip = {
-                id: `trip_${timestamp}`,
-                key: tripKey,
-                name: tripName,
-                startDate: tripStartDate,
-                endDate: tripEndDate,
-                arrivals: [],
-                activities: [],
-                departures: []
+                id: 'trip_' + new Date().getTime(),
+                key: tk, name: tn, startDate: ts, endDate: te,
+                arrivals: [], activities: [], departures: []
             };
             tripData.trips.push(newTrip);
             currentTrip = newTrip;
-            // Hide modal, reset form
             const modal = bootstrap.Modal.getInstance(document.getElementById('newTripModal'));
             if (modal) modal.hide();
             document.getElementById('newTripForm').reset();
-            showTripContent(); // Show immediately
-            setUnsavedChanges(true); // Mark as unsaved so Save button is enabled
-            // User must click Save to persist the new trip
+            showTripContent();
+            setUnsavedChanges(true);
+            showToast('Trip "' + tn + '" created! Don\'t forget to save.', 'success');
         }
 
-        // On trip selection, show trip detail view and setup unsaved logic
         function selectTrip(tripId) {
-            currentTrip = tripData.trips.find(t => t.id === tripId);
-            if (currentTrip) {
-                showTripContent();
-            }
+            currentTrip = tripData.trips.find(function(t) { return t.id === tripId; });
+            if (currentTrip) showTripContent();
         }
 
-        // Refactor trip title display
         function updateTripTitleWithDates() {
             if (!currentTrip) return;
-            const startDate = new Date(currentTrip.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            const endDate = new Date(currentTrip.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            document.getElementById('tripTitle').innerHTML = `<span style="font-size:2rem;font-weight:700;">${currentTrip.name}</span><br><span style="font-size:1.1rem;color:#888;">${startDate} to ${endDate}</span>`;
+            const sd = new Date(currentTrip.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const ed = new Date(currentTrip.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('tripTitle').textContent = currentTrip.name;
+            document.getElementById('tripDateRange').innerHTML = '<i class="bi bi-calendar3"></i> ' + sd + ' — ' + ed;
         }
 
-        // Show Edit Trip Modal (Master only)
         function showEditTripModal() {
             if (!currentTrip) return;
             document.getElementById('editTripName').value = currentTrip.name;
@@ -889,11 +1071,11 @@
             document.getElementById('editTripEndDate').value = currentTrip.endDate;
             flatpickr("#editTripStartDate", { dateFormat: "Y-m-d", allowInput: true });
             flatpickr("#editTripEndDate", { dateFormat: "Y-m-d", allowInput: true });
-            const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('editTripModal')).show();
         }
+
         function showEditTripModalFromList(tripId) {
-            const trip = tripData.trips.find(t => t.id === tripId);
+            const trip = tripData.trips.find(function(t) { return t.id === tripId; });
             if (!trip) return;
             currentTrip = trip;
             document.getElementById('editTripName').value = trip.name;
@@ -902,66 +1084,63 @@
             document.getElementById('editTripEndDate').value = trip.endDate;
             flatpickr("#editTripStartDate", { dateFormat: "Y-m-d", allowInput: true });
             flatpickr("#editTripEndDate", { dateFormat: "Y-m-d", allowInput: true });
-            const modal = new bootstrap.Modal(document.getElementById('editTripModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('editTripModal')).show();
             updateTripTitleWithDates();
         }
+
         async function saveTripEdits() {
             const name = document.getElementById('editTripName').value.trim();
             const key = document.getElementById('editTripKey').value.trim();
-            const startDate = document.getElementById('editTripStartDate').value.trim();
-            const endDate = document.getElementById('editTripEndDate').value.trim();
-            if (!name || !key || !startDate || !endDate || isNaN(Date.parse(startDate)) || isNaN(Date.parse(endDate))) {
-                alert('Please enter a valid trip name, key, start date, and end date.');
+            const sd = document.getElementById('editTripStartDate').value.trim();
+            const ed = document.getElementById('editTripEndDate').value.trim();
+            if (!name || !key || !sd || !ed || isNaN(Date.parse(sd)) || isNaN(Date.parse(ed))) {
+                showToast('Please enter valid trip details.', 'warning');
                 return;
             }
             currentTrip.name = name;
             currentTrip.key = key;
-            currentTrip.startDate = startDate;
-            currentTrip.endDate = endDate;
-            markTripEdit(); // Mark as unsaved instead of auto-saving
+            currentTrip.startDate = sd;
+            currentTrip.endDate = ed;
+            markTripEdit();
             updateTripTitleWithDates();
             const modal = bootstrap.Modal.getInstance(document.getElementById('editTripModal'));
             if (modal) modal.hide();
             updateCalendar();
-            loadTripsList && loadTripsList();
+            updateTripSummary();
+            if (typeof loadTripsList === 'function') loadTripsList();
+            showToast('Trip info updated. Save to persist changes.', 'info');
         }
-        // Delete Trip (Master only)
+
         async function deleteCurrentTrip() {
             if (!currentTrip) return;
             if (!confirm('Are you sure you want to delete this trip? This cannot be undone.')) return;
-            const idx = tripData.trips.findIndex(t => t.id === currentTrip.id);
+            const idx = tripData.trips.findIndex(function(t) { return t.id === currentTrip.id; });
             if (idx !== -1) {
+                const tripName = currentTrip.name;
                 tripData.trips.splice(idx, 1);
-                // Hide trip immediately from UI before saving
                 document.getElementById('tripContent').style.display = 'none';
                 document.getElementById('tripSelection').style.display = 'block';
                 loadTripsList();
-                saveAuthorized = true; // Authorize this save
+                saveAuthorized = true;
                 await saveData();
                 currentTrip = null;
-                // Hide modal and backdrop if open
                 document.getElementById('editTripModal').classList.remove('show');
                 document.body.classList.remove('modal-open');
-                document.querySelector('.modal-backdrop')?.remove();
+                const bd = document.querySelector('.modal-backdrop');
+                if (bd) bd.remove();
+                showToast('Trip "' + tripName + '" deleted.', 'info');
             }
         }
 
-        // Alert on navigation if unsaved changes
         window.addEventListener('beforeunload', function(e) {
-            if (unsavedChanges) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
+            if (unsavedChanges) { e.preventDefault(); e.returnValue = ''; }
         });
-        
-        // Enhanced show trip selection with unsaved changes check
+
         function enhancedShowTripSelection() {
             if (unsavedChanges) {
                 if (!confirm('You have unsaved changes. Leave and discard them?')) return;
                 setUnsavedChanges(false);
-                // Optionally reload last saved data
-                loadData().then(() => {
+                loadData().then(function() {
                     lastSavedTripData = deepClone(tripData);
                     showTripSelection();
                 });
@@ -970,489 +1149,339 @@
             showTripSelection();
         }
 
-        // Login function
         async function login() {
             try {
                 setLoading(true);
-                // Check reCAPTCHA
                 const recaptchaResponse = grecaptcha.getResponse();
                 if (!recaptchaResponse) {
-                    alert('Please complete the captcha.');
+                    showToast('Please complete the captcha.', 'warning');
                     setLoading(false);
                     return;
                 }
                 const key = document.getElementById('keyInput').value;
-                // Reload data to ensure we have the latest
                 await loadData();
                 if (!tripData) {
-                    alert('Error loading data. Please try again.');
+                    showToast('Error loading data. Please try again.', 'error');
                     setLoading(false);
                     return;
                 }
                 if (key === tripData.masterKey) {
-                    // Master user flow
-                    console.log("Login as master successful");
                     isMaster = true;
-                    currentTrip = null; // Reset current trip
+                    currentTrip = null;
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('tripSelection').style.display = 'block';
                     document.getElementById('tripContent').style.display = 'none';
                     document.getElementById('mainContent').style.display = 'block';
-                    document.getElementById('backToTripsBtn').style.display = 'block';
+                    document.getElementById('backToTripsBtn').style.display = 'inline-flex';
                     loadTripsList();
                     updateEditTripBtnVisibility();
+                    showToast('Welcome back, admin!', 'success');
                 } else {
-                    const trip = tripData.trips.find(t => t.key === key);
+                    const trip = tripData.trips.find(function(t) { return t.key === key; });
                     if (trip) {
-                        // Guest user flow - only see specific trip
-                        console.log(`Login as guest for trip "${trip.name}" successful`);
                         isMaster = false;
                         currentTrip = trip;
                         document.getElementById('loginScreen').style.display = 'none';
-                        document.getElementById('tripSelection').style.display = 'none'; // Hide trip selection for guests
+                        document.getElementById('tripSelection').style.display = 'none';
                         document.getElementById('tripContent').style.display = 'block';
-                        document.getElementById('mainContent').style.display = 'block'; 
+                        document.getElementById('mainContent').style.display = 'block';
                         updateTripTitleWithDates();
-                        document.getElementById('backToTripsBtn').style.display = 'none'; // Hide "Back to Trips" for guests
+                        document.getElementById('backToTripsBtn').style.display = 'none';
                         updateEditTripBtnVisibility();
                         updateCalendar();
+                        updateTripSummary();
+                        setupTripDetailUnsavedLogic();
+                        showToast('Welcome to ' + trip.name + '!', 'success');
                     } else {
-                        alert('Invalid access key');
+                        showToast('Invalid access key. Please try again.', 'error');
                     }
                 }
-                // Reset reCAPTCHA after login attempt
                 grecaptcha.reset();
             } catch (error) {
-                console.error("Login error:", error);
-                alert('An error occurred during login. Please try again.');
+                showToast('An error occurred during login. Please try again.', 'error');
             } finally {
                 setLoading(false);
             }
         }
 
-        // Logout function
         function logout() {
-            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('keyInput').value = '';
             currentTrip = null;
             isMaster = false;
         }
 
-        // Load trips list (Master only)
         function loadTripsList() {
-            const tripsList = document.getElementById('tripsList');
-            tripsList.innerHTML = '';
-            tripData.trips.forEach(trip => {
+            const tl = document.getElementById('tripsList');
+            tl.innerHTML = '';
+            if (!tripData.trips || tripData.trips.length === 0) {
+                tl.innerHTML = '<div class="empty-trips" style="grid-column:1/-1;"><span class="empty-icon">✈️</span><p>No trips yet! Create your first trip to get started.</p></div>';
+                return;
+            }
+            tripData.trips.forEach(function(trip) {
                 const card = document.createElement('div');
                 card.className = 'trip-card';
-                // Show correct start and end dates (no +1 day)
-                const startDate = new Date(trip.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                const endDate = new Date(trip.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                card.innerHTML = `
-                    <h3 class="h5 mb-3">${trip.name}</h3>
-                    <p class="text-muted mb-3">${startDate} to ${endDate}</p>
-                    <p class="mb-3">
-                        <span class="badge bg-success me-2">${trip.arrivals.length} Arrivals</span>
-                        <span class="badge bg-primary me-2">${trip.activities.length} Activities</span>
-                        <span class="badge bg-danger">${trip.departures.length} Departures</span>
-                    </p>
-                    <button class="btn btn-primary w-100 mb-2" onclick="selectTrip('${trip.id}')">View Trip</button>
-                    <button class="btn btn-warning edit-trip-btn w-100" onclick="showEditTripModalFromList('${trip.id}')">Edit Trip Info</button>
-                `;
-                tripsList.appendChild(card);
+                const sd = new Date(trip.startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const ed = new Date(trip.endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const s = new Date(trip.startDate + 'T00:00:00');
+                const e = new Date(trip.endDate + 'T00:00:00');
+                const days = Math.max(1, Math.round((e - s) / MS_PER_DAY) + 1);
+                card.innerHTML =
+                    '<div class="trip-card-header">' +
+                    '<h3>🌍 ' + trip.name + '</h3>' +
+                    '<div class="trip-dates"><i class="bi bi-calendar3"></i> ' + sd + ' — ' + ed + ' · ' + days + ' days</div>' +
+                    '</div>' +
+                    '<div class="trip-card-body">' +
+                    '<div class="trip-card-badges">' +
+                    '<span class="badge bg-success">🛬 ' + trip.arrivals.length + ' Arrivals</span>' +
+                    '<span class="badge bg-primary">📅 ' + trip.activities.length + ' Activities</span>' +
+                    '<span class="badge bg-danger">🛫 ' + trip.departures.length + ' Departures</span>' +
+                    '</div>' +
+                    '<div class="trip-card-actions">' +
+                    '<button class="btn btn-primary" onclick="selectTrip(\'' + trip.id + '\')"><i class="bi bi-eye"></i> View Trip</button>' +
+                    '<button class="btn btn-warning edit-trip-btn" onclick="showEditTripModalFromList(\'' + trip.id + '\')"><i class="bi bi-pencil"></i> Edit Trip Info</button>' +
+                    '<button class="copy-key-btn" onclick="copyAccessKey(\'' + trip.key + '\', event)"><i class="bi bi-clipboard"></i> Copy Access Key</button>' +
+                    '</div></div>';
+                tl.appendChild(card);
             });
         }
 
-        // Show trip selection view
         function showTripSelection() {
             document.getElementById('tripSelection').style.display = 'block';
             document.getElementById('tripContent').style.display = 'none';
             document.getElementById('eventForm').style.display = 'none';
         }
 
-        // Show new trip form (Master only)
         function showNewTripForm() {
-            const modal = new bootstrap.Modal(document.getElementById('newTripModal'));
-            modal.show();
-            initializeDatePickers(); // Ensure pickers are always initialized when modal is shown
+            new bootstrap.Modal(document.getElementById('newTripModal')).show();
+            initializeDatePickers();
         }
 
-        // Patch trip mutators to track changes
-        function patchTripMutators() {
-            // This function can be used to add change tracking to trip modification functions
-            // For now, we're using markTripEdit() directly in the add functions
-        }
+        function patchTripMutators() {}
 
-        // Setup date and time pickers for event form
         function setupDateAndTimePickers() {
             if (!currentTrip) return;
-            // Clear any existing flatpickr instances to prevent conflicts
-            const existingPickers = ['eventDate', 'eventTime', 'eventEndTime'];
-            existingPickers.forEach(id => {
-                const element = document.getElementById(id);
-                if (element && element._flatpickr) {
-                    element._flatpickr.destroy();
-                }
+            ['eventDate', 'eventTime', 'eventEndTime'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el && el._flatpickr) el._flatpickr.destroy();
             });
-            // --- Date Picker ---
-            const tripStart = new Date(currentTrip.startDate);
-            const tripEnd = new Date(currentTrip.endDate);
             const eventDateInput = document.getElementById('eventDate');
             const datePicker = flatpickr(eventDateInput, {
-                dateFormat: 'Y-m-d',
-                allowInput: true,
-                minDate: currentTrip.startDate,
-                maxDate: currentTrip.endDate,
-                clickOpens: true,
-                disableMobile: true
+                dateFormat: 'Y-m-d', allowInput: true,
+                minDate: currentTrip.startDate, maxDate: currentTrip.endDate,
+                clickOpens: true, disableMobile: true
             });
             eventDateInput.placeholder = 'YYYY-MM-DD';
-            // Make calendar icon open date picker
-            const calendarBtn = eventDateInput.parentElement.querySelector('.input-group-text');
-            if (calendarBtn) calendarBtn.onclick = () => datePicker.open();
-            // --- Time Picker (Start) ---
+            const calBtn = eventDateInput.parentElement.querySelector('.input-group-text');
+            if (calBtn) calBtn.onclick = function() { datePicker.open(); };
             const eventTimeInput = document.getElementById('eventTime');
             const timePicker = flatpickr(eventTimeInput, {
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: "h:i K",
-                time_24hr: false,
-                allowInput: true,
-                clickOpens: false,
+                enableTime: true, noCalendar: true, dateFormat: "h:i K",
+                time_24hr: false, allowInput: true, clickOpens: false,
                 minuteIncrement: 5,
-                onOpen: function(selectedDates, dateStr, instance) {
-                    instance.input.placeholder = "hh:mm";
-                },
-                onClose: function(selectedDates, dateStr, instance) {
-                    if (!instance.input.value) instance.input.placeholder = "Start Time";
-                }
+                onOpen: function(s, d, inst) { inst.input.placeholder = "hh:mm"; },
+                onClose: function(s, d, inst) { if (!inst.input.value) inst.input.placeholder = "Start Time"; }
             });
             const timeBtn = eventTimeInput.parentElement.querySelector('.input-group-text');
-            if (timeBtn) timeBtn.onclick = () => timePicker.open();
-            eventTimeInput.onfocus = function() {
-                this.placeholder = "hh:mm";
-                timePicker.open();
-            };
-            eventTimeInput.onblur = function() {
-                if (!this.value) this.placeholder = "Start Time";
-            };
-            // --- Time Picker (End) ---
+            if (timeBtn) timeBtn.onclick = function() { timePicker.open(); };
+            eventTimeInput.onfocus = function() { this.placeholder = "hh:mm"; timePicker.open(); };
+            eventTimeInput.onblur = function() { if (!this.value) this.placeholder = "Start Time"; };
             const eventEndTimeInput = document.getElementById('eventEndTime');
             if (eventEndTimeInput) {
                 const endTimePicker = flatpickr(eventEndTimeInput, {
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "h:i K",
-                    time_24hr: false,
-                    allowInput: true,
-                    clickOpens: false,
+                    enableTime: true, noCalendar: true, dateFormat: "h:i K",
+                    time_24hr: false, allowInput: true, clickOpens: false,
                     minuteIncrement: 5,
-                    onOpen: function(selectedDates, dateStr, instance) {
-                        instance.input.placeholder = "hh:mm";
-                    },
-                    onClose: function(selectedDates, dateStr, instance) {
-                        if (!instance.input.value) instance.input.placeholder = "End Time (optional)";
-                    }
+                    onOpen: function(s, d, inst) { inst.input.placeholder = "hh:mm"; },
+                    onClose: function(s, d, inst) { if (!inst.input.value) inst.input.placeholder = "End Time (optional)"; }
                 });
-                const endTimeBtn = eventEndTimeInput.parentElement.querySelector('.input-group-text');
-                if (endTimeBtn) endTimeBtn.onclick = () => endTimePicker.open();
-                eventEndTimeInput.onfocus = function() {
-                    this.placeholder = "hh:mm";
-                    endTimePicker.open();
-                };
-                eventEndTimeInput.onblur = function() {
-                    if (!this.value) this.placeholder = "End Time (optional)";
-                };
+                const endBtn = eventEndTimeInput.parentElement.querySelector('.input-group-text');
+                if (endBtn) endBtn.onclick = function() { endTimePicker.open(); };
+                eventEndTimeInput.onfocus = function() { this.placeholder = "hh:mm"; endTimePicker.open(); };
+                eventEndTimeInput.onblur = function() { if (!this.value) this.placeholder = "End Time (optional)"; };
             }
         }
 
-        // Add close button handler for event form
         document.addEventListener('DOMContentLoaded', function() {
             const collapseBtn = document.getElementById('collapseEventFormBtn');
             if (collapseBtn) {
                 collapseBtn.onclick = function() {
                     document.getElementById('eventForm').style.display = 'none';
+                    resetEventTypeButtons();
                 };
             }
         });
 
-        // Show event form
         function showEventForm(type) {
             const form = document.getElementById('eventForm');
             const endTimeContainer = document.querySelector('.activity-only');
             const addButton = document.getElementById('addEventButton');
+            resetEventTypeButtons();
+            document.querySelectorAll('.event-type-button').forEach(function(btn) {
+                if (btn.classList.contains(type)) btn.classList.add('active');
+            });
             form.style.display = 'grid';
-            // Only show end time for activities
-            if (type === 'activity') {
-                endTimeContainer.style.display = 'flex';
-            } else {
-                endTimeContainer.style.display = 'none';
-                document.getElementById('eventEndTime').value = '';
-            }
-            addButton.textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            if (type === 'activity') { endTimeContainer.style.display = 'flex'; }
+            else { endTimeContainer.style.display = 'none'; document.getElementById('eventEndTime').value = ''; }
+            addButton.textContent = 'Add ' + type.charAt(0).toUpperCase() + type.slice(1);
             setupDateAndTimePickers();
-            form.onsubmit = (e) => {
+            form.onsubmit = function(e) {
                 e.preventDefault();
                 const name = document.getElementById('eventName').value.trim();
                 const date = document.getElementById('eventDate').value.trim();
                 const time = document.getElementById('eventTime').value.trim();
                 if (!name || !date || !time || isNaN(Date.parse(date))) {
-                    alert('Please enter a valid name, date, and time.');
+                    showToast('Please enter a valid name, date, and time.', 'warning');
                     return;
                 }
                 if (type === 'activity') {
-                    const eventData = {
-                        name,
-                        date,
-                        startTime: time,
-                        endTime: document.getElementById('eventEndTime').value || null
-                    };
-                    addActivity(null, eventData);
+                    addActivity(null, { name: name, date: date, startTime: time, endTime: document.getElementById('eventEndTime').value || null });
                 } else if (type === 'arrival') {
-                    const eventData = { name, date, time };
-                    addArrival(null, eventData);
+                    addArrival(null, { name: name, date: date, time: time });
                 } else if (type === 'departure') {
-                    const eventData = { name, date, time };
-                    addDeparture(null, eventData);
+                    addDeparture(null, { name: name, date: date, time: time });
                 }
                 form.reset();
-                // Hide end time after reset if not activity
-                if (type !== 'activity') {
-                    endTimeContainer.style.display = 'none';
-                }
+                if (type !== 'activity') endTimeContainer.style.display = 'none';
             };
-            // Show the form if it was hidden
-            form.style.display = 'grid';
         }
 
-        // Update calendar
         function updateCalendar() {
             if (!currentTrip) {
-                document.getElementById('calendar').innerHTML = '<p class="text-muted">Select a trip to view its calendar</p>';
+                document.getElementById('calendar').innerHTML = '<div class="no-events" style="grid-column:1/-1;"><span class="no-events-icon">🗺️</span><p>Select a trip to view its calendar</p></div>';
                 return;
             }
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
-            // Create date range with timezone handling
             const start = new Date(currentTrip.startDate + 'T00:00:00');
             const end = new Date(currentTrip.endDate + 'T00:00:00');
             const dates = [];
-            let date = new Date(start);
-            while (date <= end) {
-                dates.push(new Date(date));
-                date.setDate(date.getDate() + 1);
-            }
+            const d = new Date(start);
+            while (d <= end) { dates.push(new Date(d)); d.setDate(d.getDate() + 1); }
 
-            // Helper to validate event date
-            function isValidEventDate(dateStr) {
-                return dateStr && !isNaN(Date.parse(dateStr));
-            }
+            function isValidEventDate(ds) { return ds && !isNaN(Date.parse(ds)); }
 
-            // Check for invalid events before rendering
-            let invalidEvent = null;
-            let invalidType = '';
-            let invalidIndex = -1;
-            ['arrivals', 'activities', 'departures'].forEach(type => {
+            let invalidEvent = null, invalidType = '', invalidIndex = -1;
+            ['arrivals', 'activities', 'departures'].forEach(function(type) {
                 if (currentTrip[type] && Array.isArray(currentTrip[type])) {
-                    currentTrip[type].forEach((event, idx) => {
-                        if (!isValidEventDate(event.date)) {
-                            invalidEvent = event;
-                            invalidType = type;
-                            invalidIndex = idx;
-                        }
+                    currentTrip[type].forEach(function(ev, idx) {
+                        if (!isValidEventDate(ev.date)) { invalidEvent = ev; invalidType = type; invalidIndex = idx; }
                     });
                 }
             });
             if (invalidEvent) {
-                alert(`Invalid or missing date for an event: "${invalidEvent.name}". Please correct it.`);
-                // Show event form pre-filled for correction
+                showToast('Invalid date for "' + invalidEvent.name + '". Please correct it.', 'warning', 5000);
                 showEventCorrectionForm(invalidType, invalidEvent, invalidIndex);
                 return;
             }
 
-            // Create calendar entries
-            dates.forEach(date => {
-                const dateStr = date.getFullYear() + '-' + 
-                    String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                    String(date.getDate()).padStart(2, '0');
+            dates.forEach(function(date, dayIndex) {
+                const dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
                 const dayCard = document.createElement('div');
                 dayCard.className = 'day-card';
-                dayCard.innerHTML = `<div class="card-title">${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>`;
+                dayCard.style.animationDelay = Math.min(dayIndex * 0.04, 0.4) + 's';
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                const dayDate = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                const hdr = '<div class="day-card-header"><div class="day-title">' + dayName + '</div><div class="day-subtitle">' + dayDate + '</div></div>';
+                const body = '<div class="day-card-body">';
                 let hasEvents = false;
-                let eventsHtml = '';
-                // --- Merge all events for this date into a single array ---
-                const mergedEvents = [];
-                // Arrivals
-                currentTrip.arrivals.filter(a => a.date === dateStr).forEach((a, idx) => {
-                    mergedEvents.push({
-                        type: 'arrival',
-                        time: a.time,
-                        name: a.name,
-                        idx,
-                        raw: a
-                    });
-                });
-                // Activities
-                currentTrip.activities.filter(a => a.date === dateStr).forEach((a, idx) => {
-                    mergedEvents.push({
-                        type: 'activity',
-                        time: a.startTime,
-                        endTime: a.endTime,
-                        name: a.name,
-                        idx,
-                        raw: a
-                    });
-                });
-                // Departures
-                currentTrip.departures.filter(d => d.date === dateStr).forEach((d, idx) => {
-                    mergedEvents.push({
-                        type: 'departure',
-                        time: d.time,
-                        name: d.name,
-                        idx,
-                        raw: d
-                    });
-                });
-                // --- Sort merged events by time (and endTime for activities as tiebreaker) ---
-                const parseTime = t => {
-                    if (!t) return 0;
-                    const d = new Date(`1970-01-01T${t.replace(/(\d{1,2}):(\d{2}) ([AP]M)/, (m, h, min, ampm) => {
-                        let hour = parseInt(h);
-                        if (ampm === 'PM' && hour !== 12) hour += 12;
-                        if (ampm === 'AM' && hour === 12) hour = 0;
-                        return hour.toString().padStart(2, '0') + ':' + min;
-                    })}:00`);
-                    return d.getTime();
-                };
-                mergedEvents.sort((a, b) => {
-                    const aTime = parseTime(a.time);
-                    const bTime = parseTime(b.time);
-                    if (aTime !== bTime) return aTime - bTime;
-                    // For activities, tiebreaker by endTime
-                    if (a.type === 'activity' && b.type === 'activity') {
-                        const aEnd = parseTime(a.endTime);
-                        const bEnd = parseTime(b.endTime);
-                        return aEnd - bEnd;
-                    }
+                const merged = [];
+                currentTrip.arrivals.filter(function(a){return a.date===dateStr;}).forEach(function(a,i){ merged.push({type:'arrival',time:a.time,name:a.name,idx:i}); });
+                currentTrip.activities.filter(function(a){return a.date===dateStr;}).forEach(function(a,i){ merged.push({type:'activity',time:a.startTime,endTime:a.endTime,name:a.name,idx:i}); });
+                currentTrip.departures.filter(function(a){return a.date===dateStr;}).forEach(function(a,i){ merged.push({type:'departure',time:a.time,name:a.name,idx:i}); });
+
+                merged.sort(function(a,b) {
+                    const at=parseTimeToMs(a.time), bt=parseTimeToMs(b.time);
+                    if (at!==bt) return at-bt;
+                    if (a.type==='activity'&&b.type==='activity') return parseTimeToMs(a.endTime)-parseTimeToMs(b.endTime);
                     return 0;
                 });
-                // --- Render events in sorted order ---
-                let arrivalIdx = 0, activityIdx = 0, departureIdx = 0;
-                mergedEvents.forEach(ev => {
+                let ai=0, ci=0, di=0;
+                merged.forEach(function(ev) {
                     hasEvents = true;
-                    if (ev.type === 'arrival') {
-                        eventsHtml += `<div class="event arrival d-flex justify-content-between align-items-center">🛬 ${ev.time} - ${ev.name} arrives <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Arrival' style='font-size:1.3em;' onclick='deleteEventSorted("arrivals", "${dateStr}", ${arrivalIdx})'>&times;</button></div>`;
-                        arrivalIdx++;
-                    } else if (ev.type === 'activity') {
-                        eventsHtml += `<div class="event activity d-flex justify-content-between align-items-center">📅 ${ev.time}${ev.endTime ? ' - ' + ev.endTime : ''} - ${ev.name} <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Activity' style='font-size:1.3em;' onclick='deleteEventSorted("activities", "${dateStr}", ${activityIdx})'>&times;</button></div>`;
-                        activityIdx++;
-                    } else if (ev.type === 'departure') {
-                        eventsHtml += `<div class="event departure d-flex justify-content-between align-items-center">🛫 ${ev.time} - ${ev.name} departs <button class='btn btn-link p-0 ms-2 text-danger event-delete-btn' title='Delete Departure' style='font-size:1.3em;' onclick='deleteEventSorted("departures", "${dateStr}", ${departureIdx})'>&times;</button></div>`;
-                        departureIdx++;
-                    }
+                    const emoji = ev.type==='arrival'?'🛬':ev.type==='activity'?'📅':'🛫';
+                    const label = ev.type==='arrival'?'arrives':ev.type==='activity'?'':'departs';
+                    const tb = ev.type==='activity'&&ev.endTime
+                        ? '<span class="event-time-badge">' + ev.time + ' – ' + ev.endTime + '</span>'
+                        : '<span class="event-time-badge">' + ev.time + '</span>';
+                    const nt = label ? ev.name + ' ' + label : ev.name;
+                    let si, dt;
+                    if (ev.type==='arrival') { si=ai; dt='arrivals'; ai++; }
+                    else if (ev.type==='activity') { si=ci; dt='activities'; ci++; }
+                    else { si=di; dt='departures'; di++; }
+                    body += '<div class="event ' + ev.type + '">' +
+                        '<div class="event-content"><span class="event-emoji">' + emoji + '</span>' +
+                        '<div class="event-details"><div class="event-name">' + nt + '</div>' + tb + '</div></div>' +
+                        '<button class="event-delete-btn" title="Delete" onclick=\'deleteEventSorted("' + dt + '","' + dateStr + '",' + si + ')\'><i class="bi bi-trash"></i></button></div>';
                 });
                 if (!hasEvents) {
-                    eventsHtml = '<div class="text-muted">No events</div>';
+                    body += '<div class="no-events"><span class="no-events-icon">☀️</span><p>Free day! Nothing planned yet.</p></div>';
                 }
-                dayCard.innerHTML += eventsHtml;
+                body += '</div>';
+                dayCard.innerHTML = hdr + body;
                 calendar.appendChild(dayCard);
             });
         }
 
-        // Show event correction form for invalid event
         function showEventCorrectionForm(type, event, index) {
             const form = document.getElementById('eventForm');
             const endTimeContainer = document.querySelector('.activity-only');
             const addButton = document.getElementById('addEventButton');
-            // Map plural to singular for label and logic
-            const typeMap = { 'arrivals': 'Arrival', 'departures': 'Departure', 'activities': 'Activity' };
+            const typeMap = { arrivals: 'Arrival', departures: 'Departure', activities: 'Activity' };
             const singularType = typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1, -1);
             form.style.display = 'grid';
             endTimeContainer.style.display = type === 'activities' ? 'block' : 'none';
-            addButton.textContent = `Fix ${singularType}`;
-            
-            // Clear any existing event listeners
+            addButton.textContent = 'Fix ' + singularType;
             const newForm = form.cloneNode(true);
             form.parentNode.replaceChild(newForm, form);
-            
-            // Pre-fill form
             document.getElementById('eventName').value = event.name || '';
             document.getElementById('eventDate').value = event.date || '';
             document.getElementById('eventTime').value = event.time || event.startTime || '';
-            if (type === 'activities') {
-                document.getElementById('eventEndTime').value = event.endTime || '';
-            }
+            if (type === 'activities') document.getElementById('eventEndTime').value = event.endTime || '';
             setupDateAndTimePickers();
-            
-            document.getElementById('eventForm').onsubmit = async (e) => {
+            document.getElementById('eventForm').onsubmit = async function(e) {
                 e.preventDefault();
                 const name = document.getElementById('eventName').value.trim();
                 const date = document.getElementById('eventDate').value.trim();
                 const time = document.getElementById('eventTime').value.trim();
                 if (!name || !date || !time || isNaN(Date.parse(date))) {
-                    alert('Please enter a valid name, date, and time.');
+                    showToast('Please enter a valid name, date, and time.', 'warning');
                     return;
                 }
-                if (type === 'arrivals') {
-                    currentTrip.arrivals[index] = { name, date, time };
-                } else if (type === 'departures') {
-                    currentTrip.departures[index] = { name, date, time };
-                } else if (type === 'activities') {
-                    const endTime = document.getElementById('eventEndTime').value || null;
-                    currentTrip.activities[index] = { name, date, startTime: time, endTime };
+                if (type === 'arrivals') currentTrip.arrivals[index] = { name: name, date: date, time: time };
+                else if (type === 'departures') currentTrip.departures[index] = { name: name, date: date, time: time };
+                else if (type === 'activities') {
+                    currentTrip.activities[index] = { name: name, date: date, startTime: time, endTime: document.getElementById('eventEndTime').value || null };
                 }
-                markTripEdit(); // Mark as unsaved instead of auto-saving
+                markTripEdit();
                 document.getElementById('eventForm').reset();
                 document.getElementById('eventForm').style.display = 'none';
-                updateCalendar(); // Try again
+                updateCalendar();
+                showToast('Event corrected!', 'success');
             };
         }
 
-        // Initialize when the page loads - CONSOLIDATED INITIALIZATION
         document.addEventListener('DOMContentLoaded', async function() {
+            // Attach critical event handlers first (before any async/CDN-dependent code)
+            var loginForm = document.getElementById('loginForm');
+            if (loginForm) loginForm.addEventListener('submit', function(e) { e.preventDefault(); login(); });
+            var deleteBtn = document.getElementById('deleteTripBtn');
+            if (deleteBtn) deleteBtn.onclick = deleteCurrentTrip;
+            var editTripModal = document.getElementById('editTripModal');
+            if (editTripModal) editTripModal.addEventListener('show.bs.modal', function() {
+                var btn = document.getElementById('deleteTripBtn');
+                if (btn) btn.onclick = deleteCurrentTrip;
+            });
+            var backBtn = document.getElementById('backToTripsBtn');
+            if (backBtn) backBtn.onclick = enhancedShowTripSelection;
+            // Load data and initialize date pickers (may fail if CDN is blocked)
             try {
-                // Load data first thing when page loads
                 await loadData();
                 lastSavedTripData = deepClone(tripData);
-                
-                // Initialize date pickers safely
-                if (typeof initializeDatePickers === 'function') {
-                    initializeDatePickers();
-                }
-
-                // Enable Enter key for login
-                const loginForm = document.getElementById('loginForm');
-                if (loginForm) {
-                    loginForm.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        login();
-                    });
-                }
-
-                // Set up delete button handler
-                const deleteBtn = document.getElementById('deleteTripBtn');
-                if (deleteBtn) {
-                    deleteBtn.onclick = deleteCurrentTrip;
-                }
-                
-                // Set up edit trip modal event handler
-                const editTripModal = document.getElementById('editTripModal');
-                if (editTripModal) {
-                    editTripModal.addEventListener('show.bs.modal', function() {
-                        const btn = document.getElementById('deleteTripBtn');
-                        if (btn) btn.onclick = deleteCurrentTrip;
-                    });
-                }
-
-                // Override the onclick handler for back button
-                const backBtn = document.getElementById('backToTripsBtn');
-                if (backBtn) {
-                    backBtn.onclick = enhancedShowTripSelection;
-                }
-                
+                if (typeof flatpickr === 'function') initializeDatePickers();
             } catch (error) {
-                console.error('Error during initialization:', error);
+                showToast('Error during initialization. Please refresh.', 'error');
             }
         });
     </script>
